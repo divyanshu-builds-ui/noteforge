@@ -192,6 +192,10 @@ def stitch():
 def how_it_works():
     return render_template('how_it_works.html')
 
+@app.route('/guide')
+def guide():
+    return render_template('guide.html')
+
 @app.route('/features')
 def features():
     return render_template('features.html')

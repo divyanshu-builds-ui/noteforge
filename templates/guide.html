@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+{% block title %}User Guide{% endblock %}
+
+{% block head %}
+<style>
+    .guide-hero {
+        text-align: center;
+        padding: 80px 24px 50px;
+    }
+    .guide-hero h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.2rem;
+        color: var(--text);
+        margin-bottom: 10px;
+    }
+    .guide-hero p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .guide-content {
+        max-width: 750px;
+        margin: 0 auto;
+        padding: 0 24px 80px;
+    }
+
+    .guide-section {
+        margin-bottom: 36px;
+    }
+    .guide-section h2 {
+        font-size: 1.2rem;
+        color: var(--text);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+    }
+    .guide-section h2 .g-icon {
+        width: 32px; height: 32px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    .guide-card {
+        padding: 20px 24px;
+        margin-bottom: 12px;
+    }
+    .guide-card h3 {
+        font-size: 0.95rem;
+        color: var(--text);
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+    .guide-card p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        line-height: 1.7;
+        margin-bottom: 10px;
+    }
+    .guide-card .steps {
+        list-style: none;
+        counter-reset: step;
+    }
+    .guide-card .steps li {
+        counter-increment: step;
+        padding: 8px 0 8px 32px;
+        position: relative;
+        font-size: 0.83rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+    .guide-card .steps li::before {
+        content: counter(step);
+        position: absolute;
+        left: 0;
+        width: 22px; height: 22px;
+        background: rgba(102,126,234,0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #667eea;
+    }
+    .guide-card .tip {
+        margin-top: 10px;
+        padding: 10px 14px;
+        background: rgba(34,197,94,0.05);
+        border: 1px solid rgba(34,197,94,0.12);
+        border-radius: 8px;
+        font-size: 0.78rem;
+        color: #22c55e;
+    }
+    .guide-card .warning {
+        margin-top: 10px;
+        padding: 10px 14px;
+        background: rgba(251,191,36,0.05);
+        border: 1px solid rgba(251,191,36,0.12);
+        border-radius: 8px;
+        font-size: 0.78rem;
+        color: #fbbf24;
+    }
+    .guide-card code {
+        background: rgba(102,126,234,0.08);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.78rem;
+        color: #a78bfa;
+    }
+
+    .guide-toc {
+        padding: 20px 24px;
+        margin-bottom: 32px;
+    }
+    .guide-toc h3 {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .toc-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+    .toc-list a {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        padding: 6px 10px;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    .toc-list a:hover {
+        background: rgba(102,126,234,0.06);
+        color: #667eea;
+    }
+
+    @media (max-width: 768px) {
+        .guide-hero { padding: 50px 16px 30px; }
+        .guide-hero h1 { font-size: 1.6rem; }
+        .guide-content { padding: 0 14px 60px; }
+        .toc-list { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="guide-hero">
+    <h1>📖 User Guide</h1>
+    <p>Learn how to use every feature of NoteForge to get the best results.</p>
+</section>
+
+<section class="guide-content">
+    <!-- Table of Contents -->
+    <div class="card guide-toc">
+        <h3>Quick Navigation</h3>
+        <div class="toc-list">
+            <a href="#getting-started">🚀 Getting Started</a>
+            <a href="#page-range">📑 Page Range & Batches</a>
+            <a href="#grid-layout">📐 Grid Layouts</a>
+            <a href="#color-invert">🎨 Color Inversion</a>
+            <a href="#brightness-contrast">☀️ Brightness & Contrast</a>
+            <a href="#borders">📏 Border Lines</a>
+            <a href="#page-numbers">#️⃣ Page Numbers</a>
+            <a href="#watermark">📝 Watermark</a>
+            <a href="#theme">🌙 Dark/Light Theme</a>
+            <a href="#shortcuts">⌨️ Keyboard Shortcuts</a>
+            <a href="#limits">⚠️ Limits & Tips</a>
+            <a href="#pwa">📱 Install as App</a>
+        </div>
+    </div>
+
+    <!-- Getting Started -->
+    <div class="guide-section" id="getting-started">
+        <h2><span class="g-icon">🚀</span> Getting Started</h2>
+        <div class="card guide-card">
+            <h3>Basic Workflow</h3>
+            <p>NoteForge converts your class note PDFs (especially dark-background slides) into compact, print-friendly A4 pages.</p>
+            <ol class="steps">
+                <li>Go to <strong>Stitch PDF</strong> from the dashboard or sidebar</li>
+                <li>Upload your PDF (drag & drop or click to browse)</li>
+                <li>Select page range (or click "All Pages")</li>
+                <li>Configure options (grid, invert, borders, etc.)</li>
+                <li>Click <strong>Generate</strong> — wait for processing</li>
+                <li>Preview the result and click <strong>Download</strong></li>
+            </ol>
+            <div class="tip">💡 The output is A4 Landscape at 300 DPI — perfect for printing.</div>
+        </div>
+    </div>
+
+    <!-- Page Range -->
+    <div class="guide-section" id="page-range">
+        <h2><span class="g-icon">📑</span> Page Range & Batches</h2>
+        <div class="card guide-card">
+            <h3>Selecting Pages</h3>
+            <p>You don't have to process the entire PDF. Enter a "From" and "To" page number to process only what you need.</p>
+            <ol class="steps">
+                <li>Enter start page in "From Page" field</li>
+                <li>Enter end page in "To Page" field (leave empty for last page)</li>
+                <li>Or click <strong>"All Pages"</strong> button to auto-detect and fill</li>
+            </ol>
+            <div class="warning">⚠️ Maximum 40 pages per batch. For larger PDFs, NoteForge will suggest batches like "Pages 1-40", "Pages 41-79" — click any batch to auto-fill.</div>
+        </div>
+    </div>
+
+    <!-- Grid Layout -->
+    <div class="guide-section" id="grid-layout">
+        <h2><span class="g-icon">📐</span> Grid Layouts</h2>
+        <div class="card guide-card">
+            <h3>Choose How Slides Are Arranged</h3>
+            <p>Select how many slides fit on one A4 page. Available layouts:</p>
+            <ol class="steps">
+                <li><code>2×2</code> — 4 slides per page (default, best balance)</li>
+                <li><code>2×1</code> — 2 slides per page (larger, more readable)</li>
+                <li><code>3×2</code> — 6 slides per page (compact)</li>
+                <li><code>3×3</code> — 9 slides per page (very compact, small text)</li>
+                <li><code>1×2</code> — 2 slides stacked vertically</li>
+                <li><code>1×4</code> — 4 slides stacked vertically</li>
+            </ol>
+            <div class="tip">💡 For handwritten notes, use 2×2 or 2×1. For typed slides with large text, 3×2 works great.</div>
+        </div>
+    </div>
+
+    <!-- Color Invert -->
+    <div class="guide-section" id="color-invert">
+        <h2><span class="g-icon">🎨</span> Color Inversion</h2>
+        <div class="card guide-card">
+            <h3>Save Ink While Printing</h3>
+            <p>Most class note apps (like Notability, GoodNotes) use dark backgrounds. Printing dark pages wastes massive ink. Color inversion flips dark → light.</p>
+            <ol class="steps">
+                <li>Toggle <strong>"Invert Colors"</strong> ON (enabled by default)</li>
+                <li>Black background becomes white, white text becomes black</li>
+                <li>Saves up to 80% ink cost</li>
+            </ol>
+            <div class="tip">💡 Turn OFF if your PDF already has a white/light background.</div>
+        </div>
+    </div>
+
+    <!-- Brightness & Contrast -->
+    <div class="guide-section" id="brightness-contrast">
+        <h2><span class="g-icon">☀️</span> Brightness & Contrast</h2>
+        <div class="card guide-card">
+            <h3>Fine-tune Readability</h3>
+            <p>After inversion, some notes may look too faint or too harsh. Adjust these sliders to fix it.</p>
+            <ol class="steps">
+                <li><strong>Brightness</strong> (50%-150%) — increase if text looks too dark after inversion</li>
+                <li><strong>Contrast</strong> (50%-200%) — increase if text looks washed out</li>
+            </ol>
+            <div class="tip">💡 Default is 100% for both. Try Brightness 110% + Contrast 120% for inverted handwritten notes.</div>
+        </div>
+    </div>
+
+    <!-- Borders -->
+    <div class="guide-section" id="borders">
+        <h2><span class="g-icon">📏</span> Border Lines</h2>
+        <div class="card guide-card">
+            <h3>Visual Separation Between Slides</h3>
+            <p>Adds light gray separator lines between slides on the output page. Makes it easier to distinguish individual slides when printed.</p>
+            <ol class="steps">
+                <li>Toggle <strong>"Border Lines"</strong> ON in Advanced Options</li>
+                <li>Lines appear between grid cells (horizontal + vertical)</li>
+            </ol>
+            <div class="tip">💡 Recommended when using 3×2 or 3×3 grid where slides are small and close together.</div>
+        </div>
+    </div>
+
+    <!-- Page Numbers -->
+    <div class="guide-section" id="page-numbers">
+        <h2><span class="g-icon">#️⃣</span> Page Numbers</h2>
+        <div class="card guide-card">
+            <h3>Track Your Pages</h3>
+            <p>Adds a small "1/20" style page number at the bottom-right of every output page.</p>
+            <ol class="steps">
+                <li>Toggle <strong>"Page Numbers"</strong> ON in Advanced Options</li>
+                <li>Numbers appear as a subtle pill badge on each page</li>
+            </ol>
+            <div class="tip">💡 Useful when printing multiple batches — helps you keep pages in order.</div>
+        </div>
+    </div>
+
+    <!-- Watermark -->
+    <div class="guide-section" id="watermark">
+        <h2><span class="g-icon">📝</span> Watermark</h2>
+        <div class="card guide-card">
+            <h3>Add Your Name or Subject</h3>
+            <p>Adds a light, diagonal repeating text watermark across every page. Useful to mark ownership or subject name.</p>
+            <ol class="steps">
+                <li>Type your text in the <strong>"Watermark"</strong> field (e.g. your name, subject)</li>
+                <li>Leave empty for no watermark</li>
+                <li>Watermark is very light (barely visible) — won't interfere with reading</li>
+            </ol>
+            <div class="warning">⚠️ Watermark is permanent in the output PDF — cannot be removed after download.</div>
+        </div>
+    </div>
+
+    <!-- Theme -->
+    <div class="guide-section" id="theme">
+        <h2><span class="g-icon">🌙</span> Dark / Light Theme</h2>
+        <div class="card guide-card">
+            <h3>Switch Website Appearance</h3>
+            <p>Toggle between dark and light mode for the website UI. This does NOT affect the output PDF.</p>
+            <ol class="steps">
+                <li>Click the 🌙/☀️ button in the top-right navbar</li>
+                <li>Your preference is saved in the browser automatically</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts -->
+    <div class="guide-section" id="shortcuts">
+        <h2><span class="g-icon">⌨️</span> Keyboard Shortcuts</h2>
+        <div class="card guide-card">
+            <h3>Power User Shortcuts</h3>
+            <p>Speed up your workflow with these shortcuts (on the Stitch page):</p>
+            <ol class="steps">
+                <li><code>Ctrl + U</code> — Open file upload dialog</li>
+                <li><code>Ctrl + G</code> — Generate stitched PDF</li>
+                <li><code>Esc</code> — Cancel/close loading overlay</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Limits -->
+    <div class="guide-section" id="limits">
+        <h2><span class="g-icon">⚠️</span> Limits & Tips</h2>
+        <div class="card guide-card">
+            <h3>What You Should Know</h3>
+            <ol class="steps">
+                <li><strong>Max file size:</strong> 50 MB per upload</li>
+                <li><strong>Max pages per batch:</strong> 40 (process larger PDFs in parts)</li>
+                <li><strong>Output format:</strong> A4 Landscape, 300 DPI PDF</li>
+                <li><strong>Processing time:</strong> ~0.5 seconds per page</li>
+                <li><strong>Data privacy:</strong> Files are processed and immediately deleted. Nothing is stored on the server.</li>
+                <li><strong>Stats/History:</strong> Stored only in your browser (localStorage). Clearing browser data will reset it.</li>
+            </ol>
+            <div class="tip">💡 For best print quality, use your printer's "Actual Size" or "Fit to Page" setting with Landscape orientation.</div>
+        </div>
+    </div>
+
+    <!-- PWA -->
+    <div class="guide-section" id="pwa">
+        <h2><span class="g-icon">📱</span> Install as App</h2>
+        <div class="card guide-card">
+            <h3>Use NoteForge Like a Native App</h3>
+            <p>NoteForge is a Progressive Web App (PWA). You can install it on your device for quick access.</p>
+            <ol class="steps">
+                <li><strong>Chrome (Desktop):</strong> Click the install icon in the address bar → "Install"</li>
+                <li><strong>Chrome (Android):</strong> Tap ⋮ menu → "Add to Home Screen"</li>
+                <li><strong>Safari (iOS):</strong> Tap Share → "Add to Home Screen"</li>
+            </ol>
+            <div class="tip">💡 Once installed, NoteForge opens in its own window without browser UI — feels like a native app.</div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -337,6 +337,20 @@
         border: none;
         cursor: pointer;
     }
+    .watermark-input {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 9px;
+        background: rgba(0,0,0,0.4);
+        color: #e4e4e7;
+        font-size: 0.9rem;
+        font-family: 'Inter', sans-serif;
+        transition: border-color 0.2s;
+        margin-bottom: 4px;
+    }
+    .watermark-input:focus { outline: none; border-color: #667eea; }
+    .watermark-input::placeholder { color: #52525b; }
 
     .btn-generate {
         width: 100%;
@@ -689,6 +703,13 @@
                 <input type="range" id="contrastSlider" min="50" max="200" value="100" class="range-slider">
             </div>
         </div>
+
+        <!-- Watermark -->
+        <div class="option-group" style="margin-top:16px;">
+            <label class="option-label">📝 Watermark (optional)</label>
+            <input type="text" id="watermarkInput" placeholder="e.g. Divyanshu Gupta" class="watermark-input">
+            <small style="color:#52525b; font-size:0.7rem;">Light diagonal text on every page</small>
+        </div>
     </div>
 
     <!-- Step 3 -->
@@ -934,6 +955,7 @@
         fd.append('page_numbers', $('pageNumToggle').checked ? 'on' : 'off');
         fd.append('brightness', $('brightnessSlider').value / 100);
         fd.append('contrast', $('contrastSlider').value / 100);
+        fd.append('watermark', $('watermarkInput').value);
 
         const eta = calculateETA();
         $('loadingOverlay').classList.add('active');

@@ -26,6 +26,12 @@ GRID_LAYOUTS = {
     '1x4': (1, 4),
 }
 
+# Theme colors
+THEMES = {
+    'dark': {'bg': '#06060b', 'card': '#14141c', 'text': '#e4e4e7', 'accent': '#667eea'},
+    'light': {'bg': '#f8fafc', 'card': '#ffffff', 'text': '#1e293b', 'accent': '#667eea'},
+}
+
 def pdf_to_images(pdf_path, start_page=1, end_page=9999):
     doc = fitz.open(pdf_path)
     images = []
@@ -88,9 +94,30 @@ def add_page_number(page, page_num, total_pages):
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
     x = A4_WIDTH - tw - 30
     y = A4_HEIGHT - th - 20
-    # Background pill
     draw.rounded_rectangle([x-12, y-6, x+tw+12, y+th+6], radius=10, fill=(240,240,240))
     draw.text((x, y), text, fill=(100, 100, 100), font=font)
+
+def add_watermark(page, watermark_text):
+    if not watermark_text:
+        return page
+    overlay = Image.new('RGBA', page.size, (255, 255, 255, 0))
+    draw = ImageDraw.Draw(overlay)
+    try:
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 60)
+    except:
+        font = ImageFont.load_default()
+    bbox = draw.textbbox((0, 0), watermark_text, font=font)
+    tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    # Diagonal watermark repeated
+    for y in range(0, A4_HEIGHT, 400):
+        for x in range(0, A4_WIDTH, 600):
+            txt_img = Image.new('RGBA', (tw + 20, th + 20), (255, 255, 255, 0))
+            txt_draw = ImageDraw.Draw(txt_img)
+            txt_draw.text((10, 10), watermark_text, fill=(180, 180, 180, 40), font=font)
+            rotated = txt_img.rotate(30, expand=True, fillcolor=(0, 0, 0, 0))
+            overlay.paste(rotated, (x, y), rotated)
+    page_rgba = page.convert('RGBA')
+    return Image.alpha_composite(page_rgba, overlay).convert('RGB')
 
 def stitch_slides(images, options):
     invert = options.get('invert', True)
@@ -99,6 +126,7 @@ def stitch_slides(images, options):
     page_numbers = options.get('page_numbers', False)
     brightness = options.get('brightness', 1.0)
     contrast = options.get('contrast', 1.0)
+    watermark = options.get('watermark', '')
 
     cols, rows = GRID_LAYOUTS.get(grid, (2, 2))
     slides_per_page = cols * rows
@@ -134,6 +162,9 @@ def stitch_slides(images, options):
         if page_numbers:
             page_num = (i // slides_per_page) + 1
             add_page_number(page, page_num, total_pages)
+
+        if watermark:
+            page = add_watermark(page, watermark)
 
         pages.append(page)
 
@@ -194,6 +225,7 @@ def generate():
     page_numbers = request.form.get('page_numbers', 'off') == 'on'
     brightness = float(request.form.get('brightness', 1.0))
     contrast = float(request.form.get('contrast', 1.0))
+    watermark = request.form.get('watermark', '').strip()
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     filename = f"{uuid.uuid4().hex}.pdf"
@@ -227,6 +259,7 @@ def generate():
             'page_numbers': page_numbers,
             'brightness': brightness,
             'contrast': contrast,
+            'watermark': watermark,
         }
         pages, slide_count = stitch_slides(images, options)
 

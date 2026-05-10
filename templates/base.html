@@ -30,6 +30,10 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
     <meta name="theme-color" content="#667eea">
 
+    <!-- PWA -->
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
+
     <!-- Structured Data -->
     <script type="application/ld+json">
     {
@@ -59,8 +63,11 @@
                 <span class="nav-name">NoteForge</span>
                 <span class="nav-tag">BETA</span>
             </a>
-            <div class="nav-hamburger" id="hamburgerBtn">
-                <span></span><span></span><span></span>
+            <div class="nav-right">
+                <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
+                <div class="nav-hamburger" id="hamburgerBtn">
+                    <span></span><span></span><span></span>
+                </div>
             </div>
         </div>
     </nav>
@@ -139,7 +146,7 @@
         </div>
     </footer>
 
-    <!-- Sidebar JS -->
+    <!-- Sidebar + Theme + PWA JS -->
     <script>
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const sidebar = document.getElementById('sidebar');
@@ -160,6 +167,25 @@
         hamburgerBtn.addEventListener('click', openSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
         sidebarClose.addEventListener('click', closeSidebar);
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('noteforge-theme') || 'dark';
+        document.body.setAttribute('data-theme', savedTheme);
+        themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+
+        themeToggle.addEventListener('click', () => {
+            const current = document.body.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', next);
+            localStorage.setItem('noteforge-theme', next);
+            themeToggle.textContent = next === 'dark' ? '🌙' : '☀️';
+        });
+
+        // PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/sw.js').catch(() => {});
+        }
     </script>
     {% block scripts %}{% endblock %}
 </body>

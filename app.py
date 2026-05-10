@@ -188,6 +188,10 @@ def index():
 def how_it_works():
     return render_template('how_it_works.html')
 
+@app.route('/features')
+def features():
+    return render_template('features.html')
+
 @app.route('/about')
 def about():
     return render_template('about.html')

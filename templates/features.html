@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block title %}Features{% endblock %}
+
+{% block head %}
+<style>
+    .features-hero {
+        text-align: center;
+        padding: 80px 24px 60px;
+    }
+    .features-hero h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.4rem;
+        color: #fafafa;
+        margin-bottom: 12px;
+    }
+    .features-hero p {
+        color: #71717a;
+        font-size: 1rem;
+        max-width: 550px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    .features-section {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 24px 80px;
+    }
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-bottom: 48px;
+    }
+    .feature-card {
+        padding: 28px;
+    }
+    .feature-card .f-icon {
+        font-size: 2rem;
+        margin-bottom: 12px;
+    }
+    .feature-card h3 {
+        font-size: 1.05rem;
+        color: #e4e4e7;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+    .feature-card p {
+        font-size: 0.85rem;
+        color: #71717a;
+        line-height: 1.6;
+    }
+    .feature-card .tag {
+        display: inline-block;
+        margin-top: 10px;
+        font-size: 0.65rem;
+        padding: 3px 8px;
+        border-radius: 12px;
+        background: rgba(102,126,234,0.1);
+        color: #667eea;
+        font-weight: 500;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 48px;
+    }
+    .stat-card {
+        text-align: center;
+        padding: 24px 12px;
+    }
+    .stat-card .stat-num {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea, #a78bfa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .stat-card .stat-label {
+        font-size: 0.72rem;
+        color: #52525b;
+        margin-top: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .cta-section {
+        text-align: center;
+        padding: 48px 24px;
+    }
+    .cta-section h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.6rem;
+        color: #fafafa;
+        margin-bottom: 12px;
+    }
+    .cta-section p { color: #71717a; margin-bottom: 20px; }
+
+    @media (max-width: 768px) {
+        .features-hero { padding: 50px 16px 40px; }
+        .features-hero h1 { font-size: 1.7rem; }
+        .features-grid { grid-template-columns: 1fr; }
+        .stats-row { grid-template-columns: 1fr 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="features-hero">
+    <h1>All Features</h1>
+    <p>Everything you need to turn bulky class PDFs into compact, print-optimized notes.</p>
+</section>
+
+<section class="features-section">
+    <div class="stats-row">
+        <div class="card stat-card">
+            <div class="stat-num">6</div>
+            <div class="stat-label">Grid Layouts</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-num">75%</div>
+            <div class="stat-label">Paper Saved</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-num">80%</div>
+            <div class="stat-label">Ink Saved</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-num">&lt;10s</div>
+            <div class="stat-label">Processing</div>
+        </div>
+    </div>
+
+    <div class="features-grid">
+        <div class="card feature-card">
+            <div class="f-icon">📐</div>
+            <h3>Custom Grid Layouts</h3>
+            <p>Choose from 6 layouts — 2×2, 2×1, 3×2, 3×3, 1×2, 1×4. Pick what fits your content best.</p>
+            <span class="tag">Core</span>
+        </div>
+        <div class="card feature-card">
+            <div class="f-icon">🎨</div>
+            <h3>Smart Color Invert</h3>
+            <p>Dark backgrounds become white instantly. Saves up to 80% ink while printing.</p>
+            <span class="tag">Core</span>
+        </div>
+        <div class="card feature-card">
+            <div class="f-icon">✂️</div>
+            <h3>Auto Whitespace Trim</h3>
+            <p>Automatically detects and removes unnecessary horizontal margins for maximum content density.</p>
+            <span class="tag">Core</span>
+        </div>
+        <div class="card feature-card">
+            <div class="f-icon">📏</div>
+            <h3>Border Lines</h3>
+            <p>Add separator lines between slides for a clean, professional look when printed.</p>
+            <span class="tag">Customization</span>
+        </div>
+        <div class="card feature-card">
+            <div class="f-icon">#️⃣</div>
+            <h3>Page Numbers</h3>
+            <p>Automatically adds page numbers (1/20 style) to every output page.</p>
+            <span class="tag">Customization</span>
+        </div>
+        <div class="card feature-card">
+            <div class="f-icon">📝</div>
+            <h3>Watermark</h3>
+            <p>Add your name or subject as a light diagonal watermark on every page.</p>
+            <span class="tag">Customization</span>
+        </div>
+        <div class="card feature-card">
+            <div class="f-icon">☀️</div>
+            <h3>Brightness & Contrast</h3>
+            <p>Fine-tune brightness (50-150%) and contrast (50-200%) for better readability.</p>
+            <span class="tag">Enhancement</span>
+        </div>
+        <div class="card feature-card">
+            <div class="f-icon">📄</div>
+            <h3>Page Range Selection</h3>
+            <p>Process only the pages you need. Smart batch suggestions for large PDFs.</p>
+            <span class="tag">Core</span>
+        </div>
+        <div class="card feature-card">
+            <div class="f-icon">🌙</div>
+            <h3>Dark / Light Theme</h3>
+            <p>Switch between dark and light mode. Your preference is saved automatically.</p>
+            <span class="tag">UX</span>
+        </div>
+        <div class="card feature-card">
+            <div class="f-icon">📱</div>
+            <h3>Installable (PWA)</h3>
+            <p>Install NoteForge as an app on your phone or desktop. Works offline for cached pages.</p>
+            <span class="tag">UX</span>
+        </div>
+        <div class="card feature-card">
+            <div class="f-icon">⌨️</div>
+            <h3>Keyboard Shortcuts</h3>
+            <p>Ctrl+U to upload, Ctrl+G to generate, Esc to cancel. Power user friendly.</p>
+            <span class="tag">UX</span>
+        </div>
+        <div class="card feature-card">
+            <div class="f-icon">📊</div>
+            <h3>Stats & History</h3>
+            <p>Track your conversions, slides processed, and pages saved. Last 20 conversions stored locally.</p>
+            <span class="tag">UX</span>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <h2>Ready to try?</h2>
+        <p>No signup, no watermark (unless you want one), no BS.</p>
+        <a href="/" class="btn btn-primary">⚡ Start Stitching</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NoteForge{% endblock %} — Smart PDF Stitcher</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-inner">
+            <a href="/" class="nav-brand">
+                <div class="nav-logo">🔥</div>
+                <span class="nav-name">NoteForge</span>
+                <span class="nav-tag">BETA</span>
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/how-it-works">How it Works</a>
+                <a href="/about">About</a>
+            </div>
+            <!-- Mobile hamburger -->
+            <div class="nav-hamburger" id="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-top">
+                <div class="footer-brand-section">
+                    <div class="footer-logo">
+                        <span class="nav-logo">🔥</span>
+                        <span class="nav-name" style="font-size:1.1rem;">NoteForge</span>
+                    </div>
+                    <p class="footer-desc">Transform your class notes into print-ready PDFs. Save paper, save ink, save time.</p>
+                </div>
+                <div class="footer-nav">
+                    <h4>Navigation</h4>
+                    <a href="/">Home</a>
+                    <a href="/how-it-works">How it Works</a>
+                    <a href="/about">About</a>
+                </div>
+                <div class="footer-nav">
+                    <h4>Features</h4>
+                    <a href="/#features">4 Slides/Page</a>
+                    <a href="/#features">Color Inversion</a>
+                    <a href="/#features">Page Selection</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>Built with ❤️ by <strong>Divyanshu Gupta</strong></span>
+                <span>NoteForge v1.0 • © 2025</span>
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

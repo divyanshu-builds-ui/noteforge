@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+{% block title %}How it Works{% endblock %}
+
+{% block head %}
+<style>
+    .hiw-hero {
+        text-align: center;
+        padding: 80px 24px 60px;
+    }
+    .hiw-hero h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.4rem;
+        color: #fafafa;
+        margin-bottom: 12px;
+    }
+    .hiw-hero p {
+        color: #71717a;
+        font-size: 1rem;
+        max-width: 550px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    /* Timeline */
+    .timeline {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 0 24px 80px;
+        position: relative;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 32px;
+        top: 0; bottom: 0;
+        width: 2px;
+        background: linear-gradient(to bottom, #667eea, #764ba2, transparent);
+    }
+    .timeline-item {
+        position: relative;
+        padding-left: 72px;
+        margin-bottom: 48px;
+    }
+    .timeline-dot {
+        position: absolute;
+        left: 20px;
+        top: 4px;
+        width: 26px; height: 26px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: white;
+        box-shadow: 0 0 20px rgba(102,126,234,0.4);
+    }
+    .timeline-content h3 {
+        font-size: 1.15rem;
+        color: #e4e4e7;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+    .timeline-content p {
+        color: #71717a;
+        font-size: 0.9rem;
+        line-height: 1.7;
+    }
+    .timeline-content .detail-box {
+        margin-top: 12px;
+        padding: 14px 18px;
+        background: rgba(102,126,234,0.05);
+        border: 1px solid rgba(102,126,234,0.12);
+        border-radius: 10px;
+        font-size: 0.82rem;
+        color: #a1a1aa;
+        line-height: 1.6;
+    }
+    .timeline-content .detail-box code {
+        background: rgba(0,0,0,0.3);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.78rem;
+        color: #a78bfa;
+    }
+
+    /* Tech stack */
+    .tech-section {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 0 24px 80px;
+    }
+    .tech-section h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.6rem;
+        color: #fafafa;
+        margin-bottom: 24px;
+        text-align: center;
+    }
+    .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+    }
+    .tech-card {
+        padding: 20px;
+        text-align: center;
+    }
+    .tech-card .tech-icon { font-size: 1.8rem; margin-bottom: 8px; }
+    .tech-card h4 { font-size: 0.9rem; color: #d4d4d8; margin-bottom: 4px; }
+    .tech-card p { font-size: 0.75rem; color: #52525b; }
+
+    /* CTA */
+    .cta-section {
+        text-align: center;
+        padding: 60px 24px;
+        background: linear-gradient(180deg, transparent, rgba(102,126,234,0.03));
+    }
+    .cta-section h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.8rem;
+        color: #fafafa;
+        margin-bottom: 12px;
+    }
+    .cta-section p {
+        color: #71717a;
+        margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+        .hiw-hero { padding: 50px 16px 40px; }
+        .hiw-hero h1 { font-size: 1.7rem; }
+        .timeline { padding: 0 16px 60px; }
+        .timeline::before { left: 24px; }
+        .timeline-item { padding-left: 60px; }
+        .timeline-dot { left: 12px; }
+        .tech-grid { grid-template-columns: 1fr 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hiw-hero">
+    <h1>How NoteForge Works</h1>
+    <p>A simple 4-step process that transforms your bulky class PDFs into compact, print-optimized notes.</p>
+</section>
+
+<section class="timeline">
+    <div class="timeline-item">
+        <div class="timeline-dot">1</div>
+        <div class="timeline-content">
+            <h3>📤 Upload Your PDF</h3>
+            <p>Drag and drop or browse to upload your class notes PDF. Supports any PDF with slide-based content — lecture recordings, handwritten notes, presentations.</p>
+            <div class="detail-box">
+                Supports files up to <code>100 MB</code>. Your file is processed locally and deleted immediately after — no data is stored on our servers.
+            </div>
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="timeline-dot">2</div>
+        <div class="timeline-content">
+            <h3>📑 Select Page Range</h3>
+            <p>Choose which pages you want to stitch. Need only pages 5-20 for tomorrow's exam? Just enter the range — no need to process the entire PDF.</p>
+            <div class="detail-box">
+                Leave "To Page" empty to process till the last page. Page numbers correspond to the original PDF slide numbers.
+            </div>
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="timeline-dot">3</div>
+        <div class="timeline-content">
+            <h3>🎨 Smart Processing</h3>
+            <p>NoteForge automatically trims unnecessary whitespace from the sides of each slide, maximizing content area. If color inversion is enabled, dark backgrounds become white — saving up to 80% ink.</p>
+            <div class="detail-box">
+                <strong>What happens under the hood:</strong><br>
+                • PDF pages converted to images at <code>200 DPI</code><br>
+                • Horizontal whitespace detected via column-wise pixel analysis<br>
+                • Colors inverted using PIL's <code>ImageOps.invert()</code><br>
+                • Each slide scaled to fit a <code>2×2 grid</code> on A4 landscape
+            </div>
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="timeline-dot">4</div>
+        <div class="timeline-content">
+            <h3>⬇️ Preview & Download</h3>
+            <p>Preview the first few pages of your stitched PDF right in the browser. Happy with the result? Hit download and print directly — optimized for A4 landscape printing.</p>
+            <div class="detail-box">
+                Output is a high-quality <code>300 DPI</code> PDF. Each page contains 4 slides in a 2×2 grid layout. For a 80-slide PDF, you get ~20 printed pages instead of 80!
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="tech-section">
+    <h2>Built With</h2>
+    <div class="tech-grid">
+        <div class="card tech-card">
+            <div class="tech-icon">🐍</div>
+            <h4>Python + Flask</h4>
+            <p>Backend processing & API</p>
+        </div>
+        <div class="card tech-card">
+            <div class="tech-icon">🖼️</div>
+            <h4>Pillow (PIL)</h4>
+            <p>Image manipulation & stitching</p>
+        </div>
+        <div class="card tech-card">
+            <div class="tech-icon">👁️</div>
+            <h4>OpenCV + NumPy</h4>
+            <p>Whitespace detection</p>
+        </div>
+        <div class="card tech-card">
+            <div class="tech-icon">📄</div>
+            <h4>pdf2image</h4>
+            <p>PDF to image conversion</p>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <h2>Ready to stitch your notes?</h2>
+    <p>It takes less than 30 seconds.</p>
+    <a href="/" class="btn btn-primary">⚡ Start Stitching Now</a>
+</section>
+{% endblock %}

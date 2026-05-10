@@ -1,0 +1,529 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block head %}
+<style>
+    .hero {
+        text-align: center;
+        padding: 80px 24px 40px;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    .hero h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.6rem;
+        font-weight: 700;
+        color: #fafafa;
+        margin-bottom: 16px;
+        line-height: 1.2;
+    }
+    .hero h1 span {
+        background: linear-gradient(135deg, #667eea, #a78bfa, #f093fb);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+        color: #71717a;
+        font-size: 1.05rem;
+        line-height: 1.6;
+        margin-bottom: 24px;
+    }
+    .hero-btns {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .badges {
+        margin-top: 32px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .badge {
+        font-size: 0.72rem;
+        padding: 6px 14px;
+        border-radius: 20px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        color: #a1a1aa;
+    }
+
+    /* Features */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 24px 60px;
+    }
+    .feature-card {
+        text-align: center;
+        padding: 32px 20px;
+    }
+    .feature-icon {
+        font-size: 2rem;
+        margin-bottom: 14px;
+    }
+    .feature-card h3 {
+        font-size: 1rem;
+        color: #e4e4e7;
+        margin-bottom: 8px;
+    }
+    .feature-card p {
+        font-size: 0.82rem;
+        color: #71717a;
+        line-height: 1.5;
+    }
+
+    /* Tool section */
+    .tool-section {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+    }
+    .tool-section .card { margin-bottom: 20px; }
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+    .card-step {
+        width: 28px; height: 28px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+    }
+    .card-title { font-size: 0.9rem; font-weight: 600; color: #d4d4d8; }
+
+    /* Upload */
+    .upload-area {
+        border: 2px dashed rgba(102,126,234,0.25);
+        border-radius: 12px;
+        padding: 36px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: rgba(102,126,234,0.02);
+    }
+    .upload-area:hover, .upload-area.dragover {
+        border-color: #667eea;
+        background: rgba(102,126,234,0.06);
+    }
+    .upload-area.has-file {
+        border-color: #22c55e;
+        background: rgba(34,197,94,0.04);
+    }
+    .upload-icon { font-size: 2.2rem; margin-bottom: 10px; }
+    .upload-text { color: #71717a; font-size: 0.85rem; }
+    .upload-text strong { color: #667eea; }
+    .file-badge {
+        margin-top: 14px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: rgba(34,197,94,0.08);
+        border: 1px solid rgba(34,197,94,0.2);
+        border-radius: 8px;
+        color: #22c55e;
+        font-size: 0.8rem;
+    }
+    .file-badge.show { display: flex; }
+    input[type="file"] { display: none; }
+
+    /* Form */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+    .form-field label {
+        display: block;
+        font-size: 0.75rem;
+        color: #71717a;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+    .form-field input {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 9px;
+        background: rgba(0,0,0,0.4);
+        color: #e4e4e7;
+        font-size: 0.9rem;
+        font-family: 'Inter', sans-serif;
+        transition: border-color 0.2s;
+    }
+    .form-field input:focus { outline: none; border-color: #667eea; }
+    .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: rgba(0,0,0,0.25);
+        border-radius: 9px;
+        border: 1px solid rgba(255,255,255,0.04);
+    }
+    .toggle-label { font-size: 0.85rem; color: #d4d4d8; }
+    .toggle-label small { display: block; color: #52525b; font-size: 0.7rem; margin-top: 2px; }
+    .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle .slider {
+        position: absolute; inset: 0;
+        background: #27272a; border-radius: 24px;
+        cursor: pointer; transition: 0.3s;
+    }
+    .toggle .slider::before {
+        content: ''; position: absolute;
+        width: 18px; height: 18px;
+        left: 3px; bottom: 3px;
+        background: white; border-radius: 50%;
+        transition: 0.3s;
+    }
+    .toggle input:checked + .slider { background: #667eea; }
+    .toggle input:checked + .slider::before { transform: translateX(20px); }
+
+    .btn-generate {
+        width: 100%;
+        padding: 14px;
+        border-radius: 10px;
+    }
+    .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-download {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: white;
+        box-shadow: 0 4px 16px rgba(34,197,94,0.25);
+        border-radius: 10px;
+        border: none;
+        font-size: 0.95rem;
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: all 0.25s;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-download:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(34,197,94,0.4);
+    }
+
+    /* Preview */
+    .preview-section { display: none; }
+    .preview-section.show { display: block; }
+    .preview-stats {
+        text-align: center;
+        margin-bottom: 14px;
+        font-size: 0.85rem;
+        color: #71717a;
+    }
+    .preview-stats strong { color: #667eea; }
+    .preview-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 18px;
+        background: rgba(0,0,0,0.3);
+        border-radius: 10px;
+        padding: 10px;
+        max-height: 350px;
+        overflow-y: auto;
+    }
+    .preview-grid img {
+        width: 100%;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* Loading */
+    .loading-overlay {
+        display: none;
+        position: fixed; inset: 0;
+        background: rgba(6,6,11,0.96);
+        z-index: 9999;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+    .loading-overlay.active { display: flex; }
+    .loader {
+        width: 48px; height: 48px;
+        border: 3px solid rgba(102,126,234,0.15);
+        border-top-color: #667eea;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-msg { font-size: 1rem; font-weight: 500; }
+    .loading-steps { display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; color: #52525b; }
+    .loading-steps .ls { transition: color 0.3s; }
+    .loading-steps .ls.active { color: #a78bfa; }
+    .loading-steps .ls.done { color: #22c55e; }
+
+    /* Toast */
+    .toast {
+        position: fixed; bottom: 24px; left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 0.85rem; font-weight: 500;
+        z-index: 10000;
+        opacity: 0; transition: all 0.4s;
+        white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.success { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25); color: #22c55e; }
+    .toast.error { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25); color: #ef4444; }
+
+    @media (max-width: 768px) {
+        .hero { padding: 50px 16px 30px; }
+        .hero h1 { font-size: 1.7rem; }
+        .features-grid { grid-template-columns: 1fr; gap: 12px; padding: 0 16px 40px; }
+        .tool-section { padding: 0 14px 40px; }
+        .preview-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero">
+    <h1>Turn Slides into <span>Print-Ready Notes</span></h1>
+    <p>Upload your class PDF, select pages, invert colors — get a compact stitched PDF optimized for printing. Save paper, save ink.</p>
+    <div class="hero-btns">
+        <a href="#tool" class="btn btn-primary">⚡ Start Stitching</a>
+        <a href="/how-it-works" class="btn btn-outline">How it Works →</a>
+    </div>
+    <div class="badges">
+        <span class="badge">📐 A4 Landscape</span>
+        <span class="badge">🎨 Color Invert</span>
+        <span class="badge">📄 4 Slides/Page</span>
+        <span class="badge">⚡ Instant Processing</span>
+        <span class="badge">🔒 No Data Stored</span>
+    </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="features-grid">
+    <div class="card feature-card">
+        <div class="feature-icon">📄</div>
+        <h3>4 Slides Per Page</h3>
+        <p>Fits 4 slides in a 2×2 grid on A4 landscape. Print less, study more.</p>
+    </div>
+    <div class="card feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3>Smart Color Invert</h3>
+        <p>Dark backgrounds become white. Saves up to 80% ink while printing.</p>
+    </div>
+    <div class="card feature-card">
+        <div class="feature-icon">✂️</div>
+        <h3>Auto Whitespace Trim</h3>
+        <p>Removes unnecessary margins and whitespace for maximum content density.</p>
+    </div>
+</section>
+
+<!-- Tool -->
+<section class="tool-section" id="tool">
+    <div class="section-header">
+        <h2>Start Stitching</h2>
+        <p>Upload, configure, generate — it's that simple.</p>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-step">1</div>
+            <div class="card-title">Upload your PDF</div>
+        </div>
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📁</div>
+            <p class="upload-text">Drag & drop or <strong>click to browse</strong></p>
+        </div>
+        <div class="file-badge" id="fileBadge">
+            <span>✅</span> <span id="fileNameText"></span>
+        </div>
+        <input type="file" id="fileInput" accept=".pdf">
+    </div>
+
+    <!-- Step 2 -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-step">2</div>
+            <div class="card-title">Select pages & options</div>
+        </div>
+        <div class="form-grid">
+            <div class="form-field">
+                <label>From Page</label>
+                <input type="number" id="startPage" value="1" min="1">
+            </div>
+            <div class="form-field">
+                <label>To Page</label>
+                <input type="number" id="endPage" placeholder="Last">
+            </div>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-label">
+                Invert Colors
+                <small>Dark → Light (saves ink while printing)</small>
+            </div>
+            <label class="toggle">
+                <input type="checkbox" id="invertToggle" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-step">3</div>
+            <div class="card-title">Generate</div>
+        </div>
+        <button class="btn btn-primary btn-generate" id="generateBtn" disabled>⚡ Generate Stitched PDF</button>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="preview-section" id="previewSection">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-step">4</div>
+                <div class="card-title">Preview & Download</div>
+            </div>
+            <div class="preview-stats">
+                <strong id="slideCount">0</strong> slides → <strong id="pageCount">0</strong> pages
+            </div>
+            <div class="preview-grid" id="previewGrid"></div>
+            <a id="downloadLink">
+                <button class="btn-download">⬇️ Download PDF</button>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loader"></div>
+    <div class="loading-msg">Forging your notes...</div>
+    <div class="loading-steps">
+        <div class="ls active" id="ls1">● Converting PDF pages</div>
+        <div class="ls" id="ls2">● Trimming whitespace</div>
+        <div class="ls" id="ls3">● Inverting colors</div>
+        <div class="ls" id="ls4">● Stitching into A4 grid</div>
+        <div class="ls" id="ls5">● Generating output PDF</div>
+    </div>
+</div>
+<div class="toast" id="toast"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const $ = id => document.getElementById(id);
+    const uploadArea = $('uploadArea'), fileInput = $('fileInput');
+    const fileBadge = $('fileBadge'), fileNameText = $('fileNameText');
+    const generateBtn = $('generateBtn');
+
+    uploadArea.onclick = () => fileInput.click();
+    uploadArea.ondragover = e => { e.preventDefault(); uploadArea.classList.add('dragover'); };
+    uploadArea.ondragleave = () => uploadArea.classList.remove('dragover');
+    uploadArea.ondrop = e => {
+        e.preventDefault(); uploadArea.classList.remove('dragover');
+        if (e.dataTransfer.files[0]) { fileInput.files = e.dataTransfer.files; onFile(); }
+    };
+    fileInput.onchange = onFile;
+
+    function onFile() {
+        const f = fileInput.files[0];
+        if (!f) return;
+        fileNameText.textContent = f.name + ' (' + (f.size/1024/1024).toFixed(1) + ' MB)';
+        fileBadge.classList.add('show');
+        uploadArea.classList.add('has-file');
+        generateBtn.disabled = false;
+        $('previewSection').classList.remove('show');
+    }
+
+    function animateSteps() {
+        const ids = ['ls1','ls2','ls3','ls4','ls5'];
+        let i = 0;
+        return setInterval(() => {
+            if (i > 0) { $(ids[i-1]).classList.remove('active'); $(ids[i-1]).classList.add('done'); $(ids[i-1]).textContent = '✓' + $(ids[i-1]).textContent.slice(1); }
+            if (i < ids.length) $(ids[i]).classList.add('active');
+            i++; if (i > ids.length) i = ids.length;
+        }, 1200);
+    }
+    function resetSteps() {
+        ['ls1','ls2','ls3','ls4','ls5'].forEach((id, i) => {
+            const el = $(id);
+            el.classList.remove('active','done');
+            el.textContent = '● ' + ['Converting PDF pages','Trimming whitespace','Inverting colors','Stitching into A4 grid','Generating output PDF'][i];
+        });
+        $('ls1').classList.add('active');
+    }
+    function showToast(msg, type) {
+        const t = $('toast');
+        t.textContent = msg;
+        t.className = 'toast ' + type + ' show';
+        setTimeout(() => t.classList.remove('show'), 4000);
+    }
+
+    generateBtn.onclick = async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const fd = new FormData();
+        fd.append('pdf', file);
+        fd.append('start_page', $('startPage').value || '1');
+        fd.append('end_page', $('endPage').value || '9999');
+        fd.append('invert', $('invertToggle').checked ? 'on' : 'off');
+
+        $('loadingOverlay').classList.add('active');
+        resetSteps();
+        const anim = animateSteps();
+        generateBtn.disabled = true;
+
+        try {
+            const resp = await fetch('/generate', { method: 'POST', body: fd });
+            const data = await resp.json();
+            if (!data.success) throw new Error(data.error || 'Processing failed');
+
+            const grid = $('previewGrid');
+            grid.innerHTML = '';
+            data.previews.forEach(src => {
+                const img = document.createElement('img');
+                img.src = 'data:image/jpeg;base64,' + src;
+                grid.appendChild(img);
+            });
+            $('pageCount').textContent = data.pages;
+            $('slideCount').textContent = data.slides;
+
+            const dl = $('downloadLink');
+            dl.href = '/download/' + data.output_id;
+            dl.download = file.name.replace('.pdf','') + '_stitched.pdf';
+
+            $('previewSection').classList.add('show');
+            $('previewSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            showToast('✅ PDF generated successfully!', 'success');
+        } catch(e) {
+            showToast('❌ ' + e.message, 'error');
+        } finally {
+            clearInterval(anim);
+            $('loadingOverlay').classList.remove('active');
+            generateBtn.disabled = false;
+        }
+    };
+</script>
+{% endblock %}

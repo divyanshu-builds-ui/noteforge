@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+
+{% block head %}
+<style>
+    .about-hero {
+        text-align: center;
+        padding: 80px 24px 60px;
+    }
+    .about-hero h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.4rem;
+        color: #fafafa;
+        margin-bottom: 12px;
+    }
+    .about-hero p {
+        color: #71717a;
+        font-size: 1rem;
+        max-width: 500px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    .about-content {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 0 24px 80px;
+    }
+
+    /* Developer card */
+    .dev-card {
+        padding: 36px;
+        text-align: center;
+        margin-bottom: 32px;
+    }
+    .dev-avatar {
+        width: 90px; height: 90px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        margin: 0 auto 16px;
+        box-shadow: 0 8px 30px rgba(102,126,234,0.3);
+    }
+    .dev-card h3 {
+        font-size: 1.4rem;
+        color: #fafafa;
+        margin-bottom: 4px;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+    .dev-card .dev-role {
+        color: #667eea;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 16px;
+    }
+    .dev-card p {
+        color: #a1a1aa;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        max-width: 480px;
+        margin: 0 auto;
+    }
+
+    /* Story section */
+    .story-card {
+        padding: 32px;
+        margin-bottom: 24px;
+    }
+    .story-card h3 {
+        font-size: 1.1rem;
+        color: #e4e4e7;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .story-card p {
+        color: #71717a;
+        font-size: 0.9rem;
+        line-height: 1.8;
+    }
+
+    /* Stats */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-bottom: 32px;
+    }
+    .stat-card {
+        padding: 24px 16px;
+        text-align: center;
+    }
+    .stat-card .stat-num {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea, #a78bfa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 4px;
+    }
+    .stat-card .stat-label {
+        font-size: 0.75rem;
+        color: #52525b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .cta-section {
+        text-align: center;
+        padding: 48px 24px;
+    }
+    .cta-section h2 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.6rem;
+        color: #fafafa;
+        margin-bottom: 12px;
+    }
+    .cta-section p { color: #71717a; margin-bottom: 20px; font-size: 0.9rem; }
+
+    @media (max-width: 768px) {
+        .about-hero { padding: 50px 16px 40px; }
+        .about-hero h1 { font-size: 1.7rem; }
+        .about-content { padding: 0 16px 60px; }
+        .stats-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+    <h1>About NoteForge</h1>
+    <p>A tool born out of frustration with printing 80-page PDFs for a 2-hour revision session.</p>
+</section>
+
+<section class="about-content">
+    <!-- Developer -->
+    <div class="card dev-card">
+        <div class="dev-avatar">👨‍💻</div>
+        <h3>Divyanshu Gupta</h3>
+        <div class="dev-role">Full-Stack Developer</div>
+        <p>Building tools that solve real problems. NoteForge was created to save paper, ink, and time for students who print class notes for revision.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="card stat-card">
+            <div class="stat-num">75%</div>
+            <div class="stat-label">Paper Saved</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-num">80%</div>
+            <div class="stat-label">Ink Saved</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-num">&lt;30s</div>
+            <div class="stat-label">Processing Time</div>
+        </div>
+    </div>
+
+    <!-- Story -->
+    <div class="card story-card">
+        <h3>💡 The Problem</h3>
+        <p>Class notes PDFs often come with dark backgrounds, unnecessary branding (headers/footers), and one slide per page. Printing 80 slides means 80 pages — expensive, wasteful, and bulky to carry around.</p>
+    </div>
+
+    <div class="card story-card">
+        <h3>🔧 The Solution</h3>
+        <p>NoteForge takes your PDF, inverts the colors (dark → light for printing), trims whitespace, and stitches 4 slides into a single A4 page. 80 slides become 20 pages. Your wallet and the environment both thank you.</p>
+    </div>
+
+    <div class="card story-card">
+        <h3>🚀 What's Next</h3>
+        <p>Planning to add: custom grid layouts (2×3, 3×3), batch processing multiple PDFs, selective slide removal, and a mobile app. Suggestions? Reach out!</p>
+    </div>
+
+    <div class="cta-section">
+        <h2>Try it yourself</h2>
+        <p>No signup, no watermark, no BS.</p>
+        <a href="/" class="btn btn-primary">⚡ Start Stitching</a>
+    </div>
+</section>
+{% endblock %}

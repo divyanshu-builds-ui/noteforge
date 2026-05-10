@@ -49,6 +49,32 @@
         border: 1px solid rgba(255,255,255,0.07);
         color: #a1a1aa;
     }
+    .user-stats {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        font-size: 0.75rem;
+        color: #52525b;
+    }
+    .user-stats strong { color: #667eea; }
+    .shortcuts-hint {
+        text-align: center;
+        font-size: 0.7rem;
+        color: #3f3f46;
+        padding: 8px;
+        margin-bottom: 20px;
+    }
+    .shortcuts-hint kbd {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-family: monospace;
+        font-size: 0.68rem;
+        color: #71717a;
+    }
 
     /* Features */
     .features-grid {
@@ -504,7 +530,14 @@
         <span class="badge">⚡ Instant Processing</span>
         <span class="badge">🔒 No Data Stored</span>
     </div>
+    <!-- User Stats -->
+    <div class="user-stats" id="userStats"></div>
 </section>
+
+<!-- Keyboard shortcuts hint -->
+<div class="shortcuts-hint">
+    ⌨️ <kbd>Ctrl+U</kbd> Upload • <kbd>Ctrl+G</kbd> Generate • <kbd>Esc</kbd> Cancel
+</div>
 
 <!-- Before / After -->
 <section class="before-after">
@@ -992,6 +1025,16 @@
             $('previewSection').classList.add('show');
             $('previewSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
             showToast('✅ PDF generated in ' + elapsed + 's!', 'success');
+
+            // Save to history
+            saveToHistory({
+                name: file.name,
+                pages: data.slides,
+                output_pages: data.pages,
+                grid: selectedGrid,
+                time: elapsed,
+                date: new Date().toLocaleString(),
+            });
         } catch(e) {
             showToast('❌ ' + e.message, 'error');
         } finally {
@@ -1001,5 +1044,50 @@
             generateBtn.disabled = false;
         }
     };
+    // --- History (localStorage) ---
+    function saveToHistory(entry) {
+        let history = JSON.parse(localStorage.getItem('noteforge-history') || '[]');
+        history.unshift(entry);
+        if (history.length > 20) history = history.slice(0, 20);
+        localStorage.setItem('noteforge-history', JSON.stringify(history));
+        updateStats();
+    }
+
+    function getHistory() {
+        return JSON.parse(localStorage.getItem('noteforge-history') || '[]');
+    }
+
+    function updateStats() {
+        const history = getHistory();
+        const totalSlides = history.reduce((a, h) => a + h.pages, 0);
+        const totalSaved = history.reduce((a, h) => a + (h.pages - h.output_pages), 0);
+        const statEl = document.getElementById('userStats');
+        if (statEl) {
+            statEl.innerHTML = `
+                <span>📊 <strong>${history.length}</strong> conversions</span>
+                <span>📄 <strong>${totalSlides}</strong> slides processed</span>
+                <span>🌿 <strong>${totalSaved}</strong> pages saved</span>
+            `;
+        }
+    }
+    updateStats();
+
+    // --- Keyboard Shortcuts ---
+    document.addEventListener('keydown', (e) => {
+        // Ctrl+G or Cmd+G = Generate
+        if ((e.ctrlKey || e.metaKey) && e.key === 'g') {
+            e.preventDefault();
+            if (!generateBtn.disabled) generateBtn.click();
+        }
+        // Ctrl+U or Cmd+U = Upload
+        if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+            e.preventDefault();
+            fileInput.click();
+        }
+        // Escape = close loading
+        if (e.key === 'Escape') {
+            $('loadingOverlay').classList.remove('active');
+        }
+    });
 </script>
 {% endblock %}

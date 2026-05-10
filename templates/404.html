@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}404 — Page Not Found{% endblock %}
+
+{% block head %}
+<style>
+    .error-page {
+        text-align: center;
+        padding: 100px 24px;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    .error-code {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+        margin-bottom: 16px;
+        animation: glitch 3s ease-in-out infinite;
+    }
+    @keyframes glitch {
+        0%, 100% { transform: translate(0); }
+        20% { transform: translate(-2px, 2px); }
+        40% { transform: translate(2px, -2px); }
+        60% { transform: translate(-1px, 1px); }
+        80% { transform: translate(1px, -1px); }
+    }
+    .error-title {
+        font-size: 1.4rem;
+        color: #e4e4e7;
+        margin-bottom: 12px;
+        font-weight: 600;
+    }
+    .error-desc {
+        color: #71717a;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 32px;
+    }
+    .error-illustration {
+        font-size: 4rem;
+        margin-bottom: 24px;
+        animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="error-page">
+    <div class="error-illustration">🔍</div>
+    <div class="error-code">404</div>
+    <h1 class="error-title">Page not found</h1>
+    <p class="error-desc">The page you're looking for doesn't exist or has been moved. Let's get you back on track.</p>
+    <a href="/" class="btn btn-primary">← Back to Home</a>
+</section>
+{% endblock %}

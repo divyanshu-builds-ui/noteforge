@@ -12,7 +12,7 @@
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://noteforge-by-divyanshu.up.railway.app/">
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://noteforge-by-divyanshu.up.railway.app/">
     <meta property="og:title" content="NoteForge — Turn Slides into Print-Ready Notes">
@@ -28,8 +28,6 @@
 
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
-
-    <!-- Theme -->
     <meta name="theme-color" content="#667eea">
 
     <!-- Structured Data -->
@@ -38,7 +36,7 @@
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "NoteForge",
-        "url": "https://noteforge.vercel.app",
+        "url": "https://noteforge-by-divyanshu.up.railway.app",
         "description": "Stitch 4 class note slides into one A4 page. Invert colors, trim whitespace, select pages. Save paper & ink.",
         "applicationCategory": "UtilityApplication",
         "operatingSystem": "Web",
@@ -61,17 +59,48 @@
                 <span class="nav-name">NoteForge</span>
                 <span class="nav-tag">BETA</span>
             </a>
-            <div class="nav-links">
-                <a href="/">Home</a>
-                <a href="/how-it-works">How it Works</a>
-                <a href="/about">About</a>
-            </div>
-            <!-- Mobile hamburger -->
-            <div class="nav-hamburger" id="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+            <div class="nav-hamburger" id="hamburgerBtn">
                 <span></span><span></span><span></span>
             </div>
         </div>
     </nav>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="nav-brand">
+                <div class="nav-logo">🔥</div>
+                <span class="nav-name">NoteForge</span>
+            </a>
+            <button class="sidebar-close" id="sidebarClose">✕</button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/" class="sidebar-link">
+                <span class="sidebar-icon">🏠</span>
+                <span>Home</span>
+            </a>
+            <a href="/how-it-works" class="sidebar-link">
+                <span class="sidebar-icon">⚙️</span>
+                <span>How it Works</span>
+            </a>
+            <a href="/about" class="sidebar-link">
+                <span class="sidebar-icon">👨‍💻</span>
+                <span>About</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="sidebar-limits">
+                <h5>📋 Limits</h5>
+                <ul>
+                    <li>Max file size: <strong>50 MB</strong></li>
+                    <li>Max pages per batch: <strong>40</strong></li>
+                    <li>Output: A4 Landscape, 300 DPI</li>
+                </ul>
+            </div>
+            <p class="sidebar-credit">Built by <strong>Divyanshu Gupta</strong></p>
+        </div>
+    </aside>
 
     <!-- CONTENT -->
     <main class="main-content">
@@ -96,10 +125,11 @@
                     <a href="/about">About</a>
                 </div>
                 <div class="footer-nav">
-                    <h4>Features</h4>
-                    <a href="/#features">4 Slides/Page</a>
-                    <a href="/#features">Color Inversion</a>
-                    <a href="/#features">Page Selection</a>
+                    <h4>Limits & Info</h4>
+                    <a href="#">Max 50 MB upload</a>
+                    <a href="#">Max 40 pages/batch</a>
+                    <a href="#">4 Slides per page</a>
+                    <a href="#">A4 Landscape output</a>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -109,6 +139,28 @@
         </div>
     </footer>
 
+    <!-- Sidebar JS -->
+    <script>
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebarClose = document.getElementById('sidebarClose');
+
+        function openSidebar() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        hamburgerBtn.addEventListener('click', openSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+        sidebarClose.addEventListener('click', closeSidebar);
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -78,6 +78,14 @@ def stitch_slides(images, invert=True):
 
     return pages, len(slides)
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(413)
+def file_too_large(e):
+    return jsonify({'error': 'File too large. Max 50 MB allowed.', 'success': False}), 413
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -90,6 +98,26 @@ def how_it_works():
 def about():
     return render_template('about.html')
 
+@app.route('/get-page-count', methods=['POST'])
+def get_page_count():
+    """Return total page count of uploaded PDF."""
+    file = request.files.get('pdf')
+    if not file:
+        return jsonify({'error': 'No file'}), 400
+
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    filename = f"{uuid.uuid4().hex}.pdf"
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
+
+    try:
+        doc = fitz.open(filepath)
+        count = len(doc)
+        doc.close()
+        return jsonify({'total_pages': count})
+    finally:
+        os.remove(filepath)
+
 @app.route('/generate', methods=['POST'])
 def generate():
     file = request.files.get('pdf')
@@ -100,16 +128,32 @@ def generate():
     end_page = int(request.form.get('end_page', 9999))
     invert = request.form.get('invert', 'off') == 'on'
 
-    # Limit to 40 pages max per request (memory/time optimization)
-    if end_page - start_page + 1 > 40:
-        return jsonify({'error': 'Max 40 pages per batch. Please reduce page range.', 'success': False}), 400
-
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     filename = f"{uuid.uuid4().hex}.pdf"
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(filepath)
 
     try:
+        # Get actual page count
+        doc = fitz.open(filepath)
+        total = len(doc)
+        doc.close()
+        end_page = min(end_page, total)
+
+        # Limit to 40 pages max per request
+        if end_page - start_page + 1 > 40:
+            batches = []
+            for b_start in range(start_page, end_page + 1, 40):
+                b_end = min(b_start + 39, end_page)
+                batches.append(f"{b_start}-{b_end}")
+            return jsonify({
+                'success': False,
+                'error': f'Max 40 pages per batch. Your PDF has {total} pages.',
+                'tip': f'Process in {len(batches)} batches: ' + ', '.join(batches),
+                'total_pages': total,
+                'suggested_batches': batches
+            }), 400
+
         images = pdf_to_images(filepath, start_page, end_page)
         pages, slide_count = stitch_slides(images, invert)
 

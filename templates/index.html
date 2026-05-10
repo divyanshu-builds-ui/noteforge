@@ -63,20 +63,9 @@
         text-align: center;
         padding: 32px 20px;
     }
-    .feature-icon {
-        font-size: 2rem;
-        margin-bottom: 14px;
-    }
-    .feature-card h3 {
-        font-size: 1rem;
-        color: #e4e4e7;
-        margin-bottom: 8px;
-    }
-    .feature-card p {
-        font-size: 0.82rem;
-        color: #71717a;
-        line-height: 1.5;
-    }
+    .feature-icon { font-size: 2rem; margin-bottom: 14px; }
+    .feature-card h3 { font-size: 1rem; color: #e4e4e7; margin-bottom: 8px; }
+    .feature-card p { font-size: 0.82rem; color: #71717a; line-height: 1.5; }
 
     /* Tool section */
     .tool-section {
@@ -147,7 +136,7 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 12px;
-        margin-bottom: 14px;
+        margin-bottom: 8px;
     }
     .form-field label {
         display: block;
@@ -168,6 +157,68 @@
         transition: border-color 0.2s;
     }
     .form-field input:focus { outline: none; border-color: #667eea; }
+    .limit-hint {
+        font-size: 0.72rem;
+        color: #52525b;
+        margin-bottom: 10px;
+        padding: 8px 12px;
+        background: rgba(251,191,36,0.05);
+        border: 1px solid rgba(251,191,36,0.12);
+        border-radius: 6px;
+    }
+    .limit-hint strong { color: #fbbf24; }
+    .btn-allpages {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(102,126,234,0.2);
+        border-radius: 8px;
+        background: rgba(102,126,234,0.05);
+        color: #a78bfa;
+        font-size: 0.82rem;
+        font-weight: 500;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-allpages:hover:not(:disabled) {
+        background: rgba(102,126,234,0.1);
+        border-color: #667eea;
+    }
+    .btn-allpages:disabled { opacity: 0.4; cursor: not-allowed; }
+    .batch-tip {
+        display: none;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        background: rgba(34,197,94,0.05);
+        border: 1px solid rgba(34,197,94,0.15);
+        border-radius: 8px;
+        font-size: 0.78rem;
+        color: #a1a1aa;
+        line-height: 1.7;
+    }
+    .batch-tip.show { display: block; }
+    .batch-tip strong { color: #22c55e; }
+    .batch-tip .batch-list {
+        margin-top: 6px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .batch-tip .batch-item {
+        padding: 4px 10px;
+        background: rgba(102,126,234,0.08);
+        border: 1px solid rgba(102,126,234,0.15);
+        border-radius: 6px;
+        color: #667eea;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .batch-tip .batch-item:hover {
+        background: rgba(102,126,234,0.15);
+        transform: scale(1.05);
+    }
     .toggle-row {
         display: flex;
         align-items: center;
@@ -224,7 +275,10 @@
 
     /* Preview */
     .preview-section { display: none; }
-    .preview-section.show { display: block; }
+    .preview-section.show {
+        display: block;
+        animation: scaleIn 0.4s ease-out;
+    }
     .preview-stats {
         text-align: center;
         margin-bottom: 14px;
@@ -249,7 +303,7 @@
         border: 1px solid rgba(255,255,255,0.06);
     }
 
-    /* Loading */
+    /* Loading with Timer */
     .loading-overlay {
         display: none;
         position: fixed; inset: 0;
@@ -258,7 +312,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 20px;
+        gap: 16px;
     }
     .loading-overlay.active { display: flex; }
     .loader {
@@ -269,11 +323,40 @@
         animation: spin 0.7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-msg { font-size: 1rem; font-weight: 500; }
-    .loading-steps { display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; color: #52525b; }
+    .loading-msg { font-size: 1.1rem; font-weight: 500; }
+    .loading-timer {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #667eea;
+    }
+    .loading-eta {
+        font-size: 0.8rem;
+        color: #52525b;
+    }
+    .loading-steps { display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; color: #52525b; margin-top: 8px; }
     .loading-steps .ls { transition: color 0.3s; }
     .loading-steps .ls.active { color: #a78bfa; }
     .loading-steps .ls.done { color: #22c55e; }
+    .loading-progress {
+        width: 200px;
+        height: 4px;
+        background: rgba(102,126,234,0.15);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 4px;
+    }
+    .loading-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #a78bfa);
+        border-radius: 4px;
+        width: 0%;
+        transition: width 0.5s linear;
+    }
+    .loading-skeleton {
+        margin-top: 20px;
+        width: 220px;
+    }
 
     /* Toast */
     .toast {
@@ -286,7 +369,7 @@
         opacity: 0; transition: all 0.4s;
         white-space: nowrap;
     }
-    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; animation: fadeInUp 0.4s ease-out; }
     .toast.success { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25); color: #22c55e; }
     .toast.error { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25); color: #ef4444; }
 
@@ -315,6 +398,55 @@
         <span class="badge">📄 4 Slides/Page</span>
         <span class="badge">⚡ Instant Processing</span>
         <span class="badge">🔒 No Data Stored</span>
+    </div>
+</section>
+
+<!-- Before / After -->
+<section class="before-after">
+    <div class="section-header">
+        <h2>Before & After</h2>
+        <p>See the difference NoteForge makes</p>
+    </div>
+    <div class="ba-container">
+        <div class="card ba-card before">
+            <h4>❌ Before</h4>
+            <div class="ba-visual">
+                <div class="ba-page dark"></div>
+                <div class="ba-page dark"></div>
+                <div class="ba-page dark"></div>
+                <div class="ba-page dark"></div>
+                <div class="ba-page dark"></div>
+                <div class="ba-page dark"></div>
+                <p style="font-size:0.7rem; color:#71717a; margin-top:8px;">80 pages • Dark background • Wastes ink</p>
+            </div>
+        </div>
+        <div class="ba-arrow">→</div>
+        <div class="card ba-card after">
+            <h4>✅ After</h4>
+            <div class="ba-visual">
+                <div class="ba-grid">
+                    <div class="ba-cell"></div>
+                    <div class="ba-cell"></div>
+                    <div class="ba-cell"></div>
+                    <div class="ba-cell"></div>
+                </div>
+                <p style="font-size:0.7rem; color:#71717a; margin-top:8px;">20 pages • White background • 4 slides/page</p>
+            </div>
+        </div>
+    </div>
+    <div class="ba-stats">
+        <div class="ba-stat">
+            <div class="num">75%</div>
+            <div class="label">Less Paper</div>
+        </div>
+        <div class="ba-stat">
+            <div class="num">80%</div>
+            <div class="label">Less Ink</div>
+        </div>
+        <div class="ba-stat">
+            <div class="num">~8s</div>
+            <div class="label">Processing</div>
+        </div>
     </div>
 </section>
 
@@ -376,7 +508,11 @@
                 <input type="number" id="endPage" placeholder="Last">
             </div>
         </div>
-        <p style="font-size:0.72rem; color:#52525b; margin-bottom:14px;">⚡ Max 40 pages per batch for fast processing. For larger PDFs, process in parts.</p>
+        <button type="button" class="btn-allpages" id="allPagesBtn" disabled>📄 All Pages</button>
+        <div class="limit-hint">
+            ⚠️ <strong>Max 40 pages</strong> per batch • Max file size <strong>50 MB</strong>
+        </div>
+        <div class="batch-tip" id="batchTip"></div>
         <div class="toggle-row">
             <div class="toggle-label">
                 Invert Colors
@@ -416,16 +552,26 @@
     </div>
 </section>
 
-<!-- Loading -->
+<!-- Loading with ETA Timer -->
 <div class="loading-overlay" id="loadingOverlay">
     <div class="loader"></div>
     <div class="loading-msg">Forging your notes...</div>
+    <div class="loading-timer" id="loadingTimer">0:00</div>
+    <div class="loading-eta" id="loadingEta">Estimated: ~calculating...</div>
+    <div class="loading-progress">
+        <div class="loading-progress-bar" id="progressBar"></div>
+    </div>
     <div class="loading-steps">
         <div class="ls active" id="ls1">● Converting PDF pages</div>
         <div class="ls" id="ls2">● Trimming whitespace</div>
         <div class="ls" id="ls3">● Inverting colors</div>
         <div class="ls" id="ls4">● Stitching into A4 grid</div>
         <div class="ls" id="ls5">● Generating output PDF</div>
+    </div>
+    <div class="loading-skeleton">
+        <div class="skeleton skeleton-box"></div>
+        <div class="skeleton skeleton-text medium"></div>
+        <div class="skeleton skeleton-text short"></div>
     </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -438,6 +584,8 @@
     const fileBadge = $('fileBadge'), fileNameText = $('fileNameText');
     const generateBtn = $('generateBtn');
 
+    let totalPages = 0;
+
     uploadArea.onclick = () => fileInput.click();
     uploadArea.ondragover = e => { e.preventDefault(); uploadArea.classList.add('dragover'); };
     uploadArea.ondragleave = () => uploadArea.classList.remove('dragover');
@@ -447,7 +595,7 @@
     };
     fileInput.onchange = onFile;
 
-    function onFile() {
+    async function onFile() {
         const f = fileInput.files[0];
         if (!f) return;
         fileNameText.textContent = f.name + ' (' + (f.size/1024/1024).toFixed(1) + ' MB)';
@@ -455,16 +603,115 @@
         uploadArea.classList.add('has-file');
         generateBtn.disabled = false;
         $('previewSection').classList.remove('show');
+        $('batchTip').classList.remove('show');
+
+        // Get page count
+        const fd = new FormData();
+        fd.append('pdf', f);
+        try {
+            const resp = await fetch('/get-page-count', { method: 'POST', body: fd });
+            const data = await resp.json();
+            totalPages = data.total_pages;
+            $('allPagesBtn').disabled = false;
+            $('allPagesBtn').textContent = `📄 All Pages (${totalPages} pages detected)`;
+            
+            // Show batch tip if > 40 pages
+            if (totalPages > 40) {
+                showBatchTip(totalPages);
+            }
+        } catch(e) {
+            $('allPagesBtn').disabled = true;
+        }
     }
 
-    function animateSteps() {
+    function showBatchTip(total) {
+        const tip = $('batchTip');
+        let batches = [];
+        for (let i = 1; i <= total; i += 40) {
+            batches.push({ start: i, end: Math.min(i + 39, total) });
+        }
+        tip.innerHTML = `
+            <strong>💡 Pro Tip:</strong> Your PDF has ${total} pages. Process in ${batches.length} batches for best results:
+            <div class="batch-list">
+                ${batches.map((b, i) => `<span class="batch-item" onclick="setBatch(${b.start}, ${b.end})">Batch ${i+1}: Pages ${b.start}-${b.end}</span>`).join('')}
+            </div>
+            <span style="color:#52525b; font-size:0.7rem; margin-top:6px; display:block;">Click any batch to auto-fill the page range ↑</span>
+        `;
+        tip.classList.add('show');
+    }
+
+    // Click batch to auto-fill
+    window.setBatch = function(start, end) {
+        $('startPage').value = start;
+        $('endPage').value = end;
+        showToast(`✅ Set to pages ${start}-${end}`, 'success');
+    };
+
+    // All Pages button
+    $('allPagesBtn').onclick = () => {
+        if (totalPages <= 40) {
+            $('startPage').value = 1;
+            $('endPage').value = totalPages;
+            $('batchTip').classList.remove('show');
+            showToast(`✅ All ${totalPages} pages selected`, 'success');
+        } else {
+            $('startPage').value = 1;
+            $('endPage').value = 40;
+            showBatchTip(totalPages);
+            showToast(`⚠️ ${totalPages} pages detected — set to first batch (1-40)`, 'error');
+        }
+    };
+
+    // ETA calculation: ~0.5s per page (based on 150 DPI processing)
+    function calculateETA() {
+        const start = parseInt($('startPage').value) || 1;
+        const end = parseInt($('endPage').value) || 40;
+        const pages = Math.min(end - start + 1, 40);
+        return Math.max(3, Math.ceil(pages * 0.5)); // min 3 seconds
+    }
+
+    // Timer
+    let timerInterval = null;
+    let elapsed = 0;
+    function startTimer(etaSeconds) {
+        elapsed = 0;
+        $('loadingTimer').textContent = '0:00';
+        $('loadingEta').textContent = `Estimated: ~${etaSeconds}s`;
+        $('progressBar').style.width = '0%';
+
+        timerInterval = setInterval(() => {
+            elapsed++;
+            const mins = Math.floor(elapsed / 60);
+            const secs = elapsed % 60;
+            $('loadingTimer').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            
+            // Progress bar
+            const progress = Math.min((elapsed / etaSeconds) * 100, 95);
+            $('progressBar').style.width = progress + '%';
+            
+            // Update ETA
+            const remaining = Math.max(0, etaSeconds - elapsed);
+            if (remaining > 0) {
+                $('loadingEta').textContent = `~${remaining}s remaining`;
+            } else {
+                $('loadingEta').textContent = 'Almost done...';
+            }
+        }, 1000);
+    }
+    function stopTimer() {
+        clearInterval(timerInterval);
+        $('progressBar').style.width = '100%';
+    }
+
+    function animateSteps(etaSeconds) {
         const ids = ['ls1','ls2','ls3','ls4','ls5'];
         let i = 0;
+        const stepTime = (etaSeconds * 1000) / ids.length;
         return setInterval(() => {
             if (i > 0) { $(ids[i-1]).classList.remove('active'); $(ids[i-1]).classList.add('done'); $(ids[i-1]).textContent = '✓' + $(ids[i-1]).textContent.slice(1); }
             if (i < ids.length) $(ids[i]).classList.add('active');
             i++; if (i > ids.length) i = ids.length;
-        }, 1200);
+        }, stepTime);
     }
     function resetSteps() {
         ['ls1','ls2','ls3','ls4','ls5'].forEach((id, i) => {
@@ -485,21 +732,37 @@
         const file = fileInput.files[0];
         if (!file) return;
 
+        // Validate page range
+        const start = parseInt($('startPage').value) || 1;
+        const end = parseInt($('endPage').value) || 9999;
+        if (end - start + 1 > 40) {
+            showToast('❌ Max 40 pages per batch. Reduce page range.', 'error');
+            return;
+        }
+
         const fd = new FormData();
         fd.append('pdf', file);
-        fd.append('start_page', $('startPage').value || '1');
-        fd.append('end_page', $('endPage').value || '9999');
+        fd.append('start_page', start);
+        fd.append('end_page', end);
         fd.append('invert', $('invertToggle').checked ? 'on' : 'off');
 
+        const eta = calculateETA();
         $('loadingOverlay').classList.add('active');
         resetSteps();
-        const anim = animateSteps();
+        const anim = animateSteps(eta);
+        startTimer(eta);
         generateBtn.disabled = true;
 
         try {
             const resp = await fetch('/generate', { method: 'POST', body: fd });
             const data = await resp.json();
-            if (!data.success) throw new Error(data.error || 'Processing failed');
+            if (!data.success) {
+                // Show batch tip if server suggests batches
+                if (data.suggested_batches) {
+                    showBatchTip(data.total_pages);
+                }
+                throw new Error(data.tip || data.error || 'Processing failed');
+            }
 
             const grid = $('previewGrid');
             grid.innerHTML = '';
@@ -517,11 +780,12 @@
 
             $('previewSection').classList.add('show');
             $('previewSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            showToast('✅ PDF generated successfully!', 'success');
+            showToast('✅ PDF generated in ' + elapsed + 's!', 'success');
         } catch(e) {
             showToast('❌ ' + e.message, 'error');
         } finally {
             clearInterval(anim);
+            stopTimer();
             $('loadingOverlay').classList.remove('active');
             generateBtn.disabled = false;
         }

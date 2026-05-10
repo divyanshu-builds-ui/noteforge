@@ -9,7 +9,7 @@ from PIL import Image, ImageOps
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
-app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max
 
 # --- Config ---
 SLIDES_PER_PAGE = 4
@@ -100,9 +100,9 @@ def generate():
     end_page = int(request.form.get('end_page', 9999))
     invert = request.form.get('invert', 'off') == 'on'
 
-    # Limit to 40 pages max per request (Vercel timeout)
+    # Limit to 40 pages max per request (memory/time optimization)
     if end_page - start_page + 1 > 40:
-        end_page = start_page + 39
+        return jsonify({'error': 'Max 40 pages per batch. Please reduce page range.', 'success': False}), 400
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     filename = f"{uuid.uuid4().hex}.pdf"

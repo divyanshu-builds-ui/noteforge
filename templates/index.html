@@ -247,6 +247,97 @@
     .toggle input:checked + .slider { background: #667eea; }
     .toggle input:checked + .slider::before { transform: translateX(20px); }
 
+    /* Advanced Options */
+    .option-group { margin-bottom: 16px; }
+    .option-label {
+        display: block;
+        font-size: 0.8rem;
+        color: #a1a1aa;
+        margin-bottom: 10px;
+        font-weight: 500;
+    }
+    .grid-selector {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    .grid-option {
+        padding: 12px 8px;
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: rgba(0,0,0,0.2);
+    }
+    .grid-option:hover { border-color: rgba(102,126,234,0.3); }
+    .grid-option.active {
+        border-color: #667eea;
+        background: rgba(102,126,234,0.08);
+        box-shadow: 0 0 12px rgba(102,126,234,0.15);
+    }
+    .grid-option small { display: block; margin-top: 6px; font-size: 0.7rem; color: #71717a; }
+    .grid-option.active small { color: #667eea; }
+    .grid-preview {
+        display: grid;
+        gap: 2px;
+        width: 40px;
+        height: 28px;
+        margin: 0 auto;
+    }
+    .grid-preview span {
+        background: rgba(255,255,255,0.12);
+        border-radius: 2px;
+    }
+    .grid-option.active .grid-preview span { background: rgba(102,126,234,0.4); }
+    .g2x2 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+    .g2x1 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr; }
+    .g3x2 { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; }
+    .g3x3 { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; }
+    .g1x2 { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+    .g1x4 { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr 1fr 1fr; }
+
+    .toggles-group { margin-bottom: 16px; }
+
+    .sliders-group { margin-top: 16px; }
+    .slider-field {
+        margin-bottom: 12px;
+    }
+    .slider-field label {
+        display: block;
+        font-size: 0.78rem;
+        color: #a1a1aa;
+        margin-bottom: 6px;
+    }
+    .slider-field label span { color: #667eea; font-weight: 600; }
+    .range-slider {
+        width: 100%;
+        height: 4px;
+        -webkit-appearance: none;
+        appearance: none;
+        background: rgba(255,255,255,0.08);
+        border-radius: 4px;
+        outline: none;
+        cursor: pointer;
+    }
+    .range-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px; height: 16px;
+        background: #667eea;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(102,126,234,0.4);
+        transition: transform 0.2s;
+    }
+    .range-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+    .range-slider::-moz-range-thumb {
+        width: 16px; height: 16px;
+        background: #667eea;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+    }
+
     .btn-generate {
         width: 100%;
         padding: 14px;
@@ -525,6 +616,81 @@
         </div>
     </div>
 
+    <!-- Step 2.5: Advanced Options -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-step">⚙️</div>
+            <div class="card-title">Advanced Options</div>
+        </div>
+
+        <!-- Grid Layout -->
+        <div class="option-group">
+            <label class="option-label">📰 Grid Layout</label>
+            <div class="grid-selector" id="gridSelector">
+                <div class="grid-option active" data-grid="2x2">
+                    <div class="grid-preview g2x2"><span></span><span></span><span></span><span></span></div>
+                    <small>2×2</small>
+                </div>
+                <div class="grid-option" data-grid="2x1">
+                    <div class="grid-preview g2x1"><span></span><span></span></div>
+                    <small>2×1</small>
+                </div>
+                <div class="grid-option" data-grid="3x2">
+                    <div class="grid-preview g3x2"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    <small>3×2</small>
+                </div>
+                <div class="grid-option" data-grid="3x3">
+                    <div class="grid-preview g3x3"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    <small>3×3</small>
+                </div>
+                <div class="grid-option" data-grid="1x2">
+                    <div class="grid-preview g1x2"><span></span><span></span></div>
+                    <small>1×2</small>
+                </div>
+                <div class="grid-option" data-grid="1x4">
+                    <div class="grid-preview g1x4"><span></span><span></span><span></span><span></span></div>
+                    <small>1×4</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toggles row -->
+        <div class="toggles-group">
+            <div class="toggle-row">
+                <div class="toggle-label">
+                    📏 Border Lines
+                    <small>Separator lines between slides</small>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" id="bordersToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row" style="margin-top:8px;">
+                <div class="toggle-label">
+                    #️⃣ Page Numbers
+                    <small>Add page numbers to output</small>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" id="pageNumToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Brightness & Contrast -->
+        <div class="sliders-group">
+            <div class="slider-field">
+                <label>☀️ Brightness: <span id="brightnessVal">100%</span></label>
+                <input type="range" id="brightnessSlider" min="50" max="150" value="100" class="range-slider">
+            </div>
+            <div class="slider-field">
+                <label>🌓 Contrast: <span id="contrastVal">100%</span></label>
+                <input type="range" id="contrastSlider" min="50" max="200" value="100" class="range-slider">
+            </div>
+        </div>
+    </div>
+
     <!-- Step 3 -->
     <div class="card">
         <div class="card-header">
@@ -585,6 +751,24 @@
     const generateBtn = $('generateBtn');
 
     let totalPages = 0;
+    let selectedGrid = '2x2';
+
+    // Grid selector
+    document.querySelectorAll('.grid-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            document.querySelectorAll('.grid-option').forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+            selectedGrid = opt.dataset.grid;
+        });
+    });
+
+    // Brightness/Contrast sliders
+    $('brightnessSlider').oninput = function() {
+        $('brightnessVal').textContent = this.value + '%';
+    };
+    $('contrastSlider').oninput = function() {
+        $('contrastVal').textContent = this.value + '%';
+    };
 
     uploadArea.onclick = () => fileInput.click();
     uploadArea.ondragover = e => { e.preventDefault(); uploadArea.classList.add('dragover'); };
@@ -745,6 +929,11 @@
         fd.append('start_page', start);
         fd.append('end_page', end);
         fd.append('invert', $('invertToggle').checked ? 'on' : 'off');
+        fd.append('grid', selectedGrid);
+        fd.append('borders', $('bordersToggle').checked ? 'on' : 'off');
+        fd.append('page_numbers', $('pageNumToggle').checked ? 'on' : 'off');
+        fd.append('brightness', $('brightnessSlider').value / 100);
+        fd.append('contrast', $('contrastSlider').value / 100);
 
         const eta = calculateETA();
         $('loadingOverlay').classList.add('active');

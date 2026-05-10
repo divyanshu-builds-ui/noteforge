@@ -4,25 +4,32 @@ import uuid
 import base64
 import numpy as np
 import fitz  # PyMuPDF
-from flask import Flask, render_template, request, send_file, jsonify, make_response
-from PIL import Image, ImageOps
+from flask import Flask, render_template, request, send_file, jsonify
+from PIL import Image, ImageOps, ImageDraw, ImageFont, ImageEnhance
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
-app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 
 # --- Config ---
-SLIDES_PER_PAGE = 4
 A4_WIDTH, A4_HEIGHT = 3508, 2480  # A4 landscape at 300 DPI
 WHITESPACE_THRESH = 240
 PADDING = 15
 
+# Grid layouts: name -> (cols, rows)
+GRID_LAYOUTS = {
+    '2x1': (2, 1),
+    '2x2': (2, 2),
+    '3x2': (3, 2),
+    '3x3': (3, 3),
+    '1x2': (1, 2),
+    '1x4': (1, 4),
+}
+
 def pdf_to_images(pdf_path, start_page=1, end_page=9999):
-    """Convert PDF pages to PIL Images using PyMuPDF."""
     doc = fitz.open(pdf_path)
     images = []
     end_page = min(end_page, len(doc))
-    # Use 150 DPI for faster processing on serverless
     zoom = 150 / 72
     mat = fitz.Matrix(zoom, zoom)
     for i in range(start_page - 1, end_page):
@@ -45,38 +52,94 @@ def trim_horizontal_whitespace(img):
     right = min(arr.shape[1], right + pad)
     return img.crop((left, 0, right, img.size[1]))
 
+def adjust_brightness_contrast(img, brightness=1.0, contrast=1.0):
+    if brightness != 1.0:
+        img = ImageEnhance.Brightness(img).enhance(brightness)
+    if contrast != 1.0:
+        img = ImageEnhance.Contrast(img).enhance(contrast)
+    return img
+
 def fit_in_cell(img, cell_w, cell_h):
     w, h = img.size
     scale = min((cell_w - 2*PADDING) / w, (cell_h - 2*PADDING) / h)
     new_w, new_h = int(w * scale), int(h * scale)
     return img.resize((new_w, new_h), Image.LANCZOS)
 
-def stitch_slides(images, invert=True):
+def draw_borders(page, cols, rows, cell_w, cell_h):
+    draw = ImageDraw.Draw(page)
+    color = (200, 200, 200)
+    # Vertical lines
+    for c in range(1, cols):
+        x = c * cell_w
+        draw.line([(x, 0), (x, A4_HEIGHT)], fill=color, width=2)
+    # Horizontal lines
+    for r in range(1, rows):
+        y = r * cell_h
+        draw.line([(0, y), (A4_WIDTH, y)], fill=color, width=2)
+
+def add_page_number(page, page_num, total_pages):
+    draw = ImageDraw.Draw(page)
+    text = f"{page_num} / {total_pages}"
+    try:
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 28)
+    except:
+        font = ImageFont.load_default()
+    bbox = draw.textbbox((0, 0), text, font=font)
+    tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    x = A4_WIDTH - tw - 30
+    y = A4_HEIGHT - th - 20
+    # Background pill
+    draw.rounded_rectangle([x-12, y-6, x+tw+12, y+th+6], radius=10, fill=(240,240,240))
+    draw.text((x, y), text, fill=(100, 100, 100), font=font)
+
+def stitch_slides(images, options):
+    invert = options.get('invert', True)
+    grid = options.get('grid', '2x2')
+    borders = options.get('borders', False)
+    page_numbers = options.get('page_numbers', False)
+    brightness = options.get('brightness', 1.0)
+    contrast = options.get('contrast', 1.0)
+
+    cols, rows = GRID_LAYOUTS.get(grid, (2, 2))
+    slides_per_page = cols * rows
+
     slides = []
     for img in images:
         img = trim_horizontal_whitespace(img)
         if invert:
             img = ImageOps.invert(img.convert('RGB'))
+        img = adjust_brightness_contrast(img, brightness, contrast)
         slides.append(img)
 
-    cell_w = A4_WIDTH // 2
-    cell_h = A4_HEIGHT // 2
+    cell_w = A4_WIDTH // cols
+    cell_h = A4_HEIGHT // rows
 
     pages = []
-    for i in range(0, len(slides), SLIDES_PER_PAGE):
-        batch = slides[i:i + SLIDES_PER_PAGE]
+    total_pages = -(-len(slides) // slides_per_page)  # ceil division
+
+    for i in range(0, len(slides), slides_per_page):
+        batch = slides[i:i + slides_per_page]
         page = Image.new('RGB', (A4_WIDTH, A4_HEIGHT), 'white')
 
         for idx, s in enumerate(batch):
-            row, col = idx // 2, idx % 2
+            row, col = idx // cols, idx % cols
             resized = fit_in_cell(s, cell_w, cell_h)
             x = col * cell_w + (cell_w - resized.size[0]) // 2
             y = row * cell_h + (cell_h - resized.size[1]) // 2
             page.paste(resized, (x, y))
 
+        if borders:
+            draw_borders(page, cols, rows, cell_w, cell_h)
+
+        if page_numbers:
+            page_num = (i // slides_per_page) + 1
+            add_page_number(page, page_num, total_pages)
+
         pages.append(page)
 
     return pages, len(slides)
+
+# --- Routes ---
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -100,7 +163,6 @@ def about():
 
 @app.route('/get-page-count', methods=['POST'])
 def get_page_count():
-    """Return total page count of uploaded PDF."""
     file = request.files.get('pdf')
     if not file:
         return jsonify({'error': 'No file'}), 400
@@ -127,6 +189,11 @@ def generate():
     start_page = int(request.form.get('start_page', 1))
     end_page = int(request.form.get('end_page', 9999))
     invert = request.form.get('invert', 'off') == 'on'
+    grid = request.form.get('grid', '2x2')
+    borders = request.form.get('borders', 'off') == 'on'
+    page_numbers = request.form.get('page_numbers', 'off') == 'on'
+    brightness = float(request.form.get('brightness', 1.0))
+    contrast = float(request.form.get('contrast', 1.0))
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     filename = f"{uuid.uuid4().hex}.pdf"
@@ -134,13 +201,11 @@ def generate():
     file.save(filepath)
 
     try:
-        # Get actual page count
         doc = fitz.open(filepath)
         total = len(doc)
         doc.close()
         end_page = min(end_page, total)
 
-        # Limit to 40 pages max per request
         if end_page - start_page + 1 > 40:
             batches = []
             for b_start in range(start_page, end_page + 1, 40):
@@ -155,14 +220,20 @@ def generate():
             }), 400
 
         images = pdf_to_images(filepath, start_page, end_page)
-        pages, slide_count = stitch_slides(images, invert)
+        options = {
+            'invert': invert,
+            'grid': grid,
+            'borders': borders,
+            'page_numbers': page_numbers,
+            'brightness': brightness,
+            'contrast': contrast,
+        }
+        pages, slide_count = stitch_slides(images, options)
 
-        # Save stitched PDF
         output_id = uuid.uuid4().hex
         output_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{output_id}_stitched.pdf")
         pages[0].save(output_path, format='PDF', save_all=True, append_images=pages[1:], resolution=300)
 
-        # Generate preview thumbnails (first 4 pages)
         previews = []
         for page in pages[:4]:
             thumb = page.copy()

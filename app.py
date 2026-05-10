@@ -22,11 +22,11 @@ def pdf_to_images(pdf_path, start_page=1, end_page=9999):
     doc = fitz.open(pdf_path)
     images = []
     end_page = min(end_page, len(doc))
+    # Use 150 DPI for faster processing on serverless
+    zoom = 150 / 72
+    mat = fitz.Matrix(zoom, zoom)
     for i in range(start_page - 1, end_page):
         page = doc[i]
-        # Render at 200 DPI (default is 72, so zoom = 200/72)
-        zoom = 200 / 72
-        mat = fitz.Matrix(zoom, zoom)
         pix = page.get_pixmap(matrix=mat)
         img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
         images.append(img)
@@ -99,6 +99,10 @@ def generate():
     start_page = int(request.form.get('start_page', 1))
     end_page = int(request.form.get('end_page', 9999))
     invert = request.form.get('invert', 'off') == 'on'
+
+    # Limit to 40 pages max per request (Vercel timeout)
+    if end_page - start_page + 1 > 40:
+        end_page = start_page + 39
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     filename = f"{uuid.uuid4().hex}.pdf"

@@ -184,6 +184,10 @@ def file_too_large(e):
 def index():
     return render_template('index.html')
 
+@app.route('/stitch')
+def stitch():
+    return render_template('stitch.html')
+
 @app.route('/how-it-works')
 def how_it_works():
     return render_template('how_it_works.html')

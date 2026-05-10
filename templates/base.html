@@ -85,7 +85,11 @@
         <nav class="sidebar-nav">
             <a href="/" class="sidebar-link">
                 <span class="sidebar-icon">🏠</span>
-                <span>Home</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="/stitch" class="sidebar-link">
+                <span class="sidebar-icon">⚡</span>
+                <span>Stitch PDF</span>
             </a>
             <a href="/features" class="sidebar-link">
                 <span class="sidebar-icon">✨</span>
@@ -131,7 +135,8 @@
                 </div>
                 <div class="footer-nav">
                     <h4>Navigation</h4>
-                    <a href="/">Home</a>
+                    <a href="/">Dashboard</a>
+                    <a href="/stitch">Stitch PDF</a>
                     <a href="/features">Features</a>
                     <a href="/how-it-works">How it Works</a>
                     <a href="/about">About</a>
@@ -151,7 +156,22 @@
         </div>
     </footer>
 
-    <!-- Sidebar + Theme + PWA JS -->
+    <!-- Page Transition Skeleton -->
+    <div class="page-loader" id="pageLoader">
+        <div class="page-loader-inner">
+            <div class="skeleton skeleton-box" style="height:40px;margin-bottom:16px;"></div>
+            <div class="skeleton skeleton-text medium"></div>
+            <div class="skeleton skeleton-text short"></div>
+            <div class="skeleton skeleton-box" style="height:100px;margin-top:16px;"></div>
+            <div class="skeleton skeleton-text medium" style="margin-top:12px;"></div>
+            <div class="skeleton skeleton-text short"></div>
+        </div>
+    </div>
+
+    <!-- Global Toast -->
+    <div class="global-toast" id="globalToast"></div>
+
+    <!-- Sidebar + Theme + PWA + Page Transitions JS -->
     <script>
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const sidebar = document.getElementById('sidebar');
@@ -162,16 +182,24 @@
             sidebar.classList.add('open');
             sidebarOverlay.classList.add('open');
             document.body.style.overflow = 'hidden';
+            // Animate hamburger to X
+            hamburgerBtn.classList.add('active');
         }
         function closeSidebar() {
             sidebar.classList.remove('open');
             sidebarOverlay.classList.remove('open');
             document.body.style.overflow = '';
+            hamburgerBtn.classList.remove('active');
         }
 
         hamburgerBtn.addEventListener('click', openSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
         sidebarClose.addEventListener('click', closeSidebar);
+
+        // Close sidebar on link click (mobile)
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', () => closeSidebar());
+        });
 
         // Theme Toggle
         const themeToggle = document.getElementById('themeToggle');
@@ -185,7 +213,32 @@
             document.body.setAttribute('data-theme', next);
             localStorage.setItem('noteforge-theme', next);
             themeToggle.textContent = next === 'dark' ? '🌙' : '☀️';
+            globalToast(next === 'dark' ? '🌙 Dark mode' : '☀️ Light mode', 'success');
         });
+
+        // Page Transition: show skeleton on navigation
+        document.querySelectorAll('a[href^="/"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href === window.location.pathname) return;
+                if (this.getAttribute('download')) return;
+                e.preventDefault();
+                document.getElementById('pageLoader').classList.add('active');
+                setTimeout(() => { window.location.href = href; }, 200);
+            });
+        });
+        // Hide loader when page loads
+        window.addEventListener('load', () => {
+            document.getElementById('pageLoader').classList.remove('active');
+        });
+
+        // Global Toast function
+        function globalToast(msg, type) {
+            const t = document.getElementById('globalToast');
+            t.textContent = msg;
+            t.className = 'global-toast ' + type + ' show';
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
 
         // PWA Service Worker
         if ('serviceWorker' in navigator) {

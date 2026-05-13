@@ -169,3 +169,7 @@ MIT
 ## 🙌 Contributing
 
 PRs welcome! Feel free to open issues for bugs or feature requests.
+
+---
+
+Built with ⚡ by **Divyanshu Gupta**

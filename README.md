@@ -1,12 +1,16 @@
 # ⚡ NoteForge — Smart PDF Stitcher
 
-> Stitch class note slides into compact, print-ready A4 PDFs. Save paper & ink.
+> Stitch class note slides into compact, print-ready PDFs. Save paper & ink.
+
+🔗 **Live:** [noteforge-by-divyanshu.up.railway.app](https://noteforge-by-divyanshu.up.railway.app)
 
 ![NoteForge Screenshot](assets/Screenshot_2026-04-29_01-24-12.png)
 
+---
+
 ## 🎯 What is NoteForge?
 
-NoteForge is a web app built for students who want to print their class notes (PDF slides) efficiently. It takes bulky slide-per-page PDFs and stitches multiple slides onto a single A4 page in a grid layout — saving up to **75% paper** and **80% ink**.
+NoteForge is a web app built for students who want to print their class notes (PDF slides) efficiently. It takes bulky slide-per-page PDFs and stitches multiple slides onto a single page in a grid layout — saving up to **75% paper** and **80% ink**.
 
 No signup. No watermark (unless you want one). No BS.
 
@@ -20,23 +24,39 @@ No signup. No watermark (unless you want one). No BS.
 | 📐 Custom Grid Layouts | 6 layouts — `2×2`, `2×1`, `3×2`, `3×3`, `1×2`, `1×4` |
 | 🎨 Smart Color Invert | Dark backgrounds → white. Saves ~80% ink |
 | ✂️ Auto Whitespace Trim | Detects & removes unnecessary horizontal margins |
-| 📄 Page Range Selection | Process only the pages you need with smart batch suggestions for large PDFs (40 pages/batch) |
+| 📄 Page Range Selection | Process only the pages you need (40 pages/batch) |
+| 🚫 Selective Page Removal | Skip specific pages or ranges (e.g. `3, 7, 12-15`) |
+| 📑 Multiple PDF Merge | Upload 2-3 PDFs and stitch them together in sequence |
+| 📄 Custom Page Size | A4, Letter, A3 output support |
 
 ### Customization
 | Feature | Description |
 |---------|-------------|
-| 📏 Border Lines | Separator lines between slides for a clean printed look |
+| 📏 Border Lines | Separator lines between slides |
 | #️⃣ Page Numbers | Auto page numbers (1/20 style) on every output page |
 | 📝 Watermark | Diagonal watermark (name/subject) on every page |
 | ☀️ Brightness & Contrast | Fine-tune brightness (50–150%) and contrast (50–200%) |
+| 🔒 Password Protection | AES-256 encrypt output PDF with a password |
+| 📦 Compression | Reduce output file size by ~40-60% for sharing |
 
-### UX
+### UX & Polish
 | Feature | Description |
 |---------|-------------|
 | 🌙 Dark / Light Theme | Toggle with auto-save preference |
-| 📱 PWA (Installable) | Install as app on phone/desktop, works offline for cached pages |
+| 📱 PWA (Installable) | Install as app on phone/desktop, works offline |
 | ⌨️ Keyboard Shortcuts | `Ctrl+U` upload, `Ctrl+G` generate, `Esc` cancel |
-| 📊 Stats & History | Track conversions, slides processed, pages saved (stored locally) |
+| 📊 Stats & History | Track conversions, slides processed, pages saved |
+| 🎯 Step Progress Bar | Clear 4-step indicator (Upload → Configure → Generate → Download) |
+| 👁️ Quick Preview | First page thumbnail shown immediately after upload |
+| 📋 Live Estimate | Shows expected output pages before generating |
+| 🎉 Confetti & Sound | Celebration animation + sound on successful generation |
+| 🖨️ Print Directly | Print output without downloading first |
+| 📤 Share | WhatsApp, Telegram, Copy Link, Native Share |
+| 💾 Remember Settings | Last used settings auto-saved for next session |
+| 🔄 Reset Button | One-click reset all settings to defaults |
+| ⚡ Splash Screen | Animated logo on first visit (per session) |
+| 🌐 Offline Page | Graceful offline fallback with retry |
+| 🔔 Network Detection | Toast notifications for online/offline status |
 
 ---
 
@@ -54,8 +74,9 @@ No signup. No watermark (unless you want one). No BS.
 - **PDF Processing:** PyMuPDF (fitz)
 - **Image Processing:** Pillow, NumPy
 - **Frontend:** Jinja2 templates, vanilla CSS/JS
+- **Icons:** Lucide Icons (SVG)
 - **PWA:** Service Worker + Web App Manifest
-- **Deployment:** Vercel (serverless) / Docker
+- **Deployment:** Railway / Docker / Vercel
 
 ---
 
@@ -67,14 +88,9 @@ No signup. No watermark (unless you want one). No BS.
 ### Local Setup
 
 ```bash
-# Clone the repo
 git clone https://github.com/divyanshu-builds-ui/Noteforge.git
 cd Noteforge
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Run the app
 python app.py
 ```
 
@@ -93,24 +109,26 @@ docker run -p 5000:5000 noteforge
 
 ```
 Noteforge/
-├── app.py              # Flask app with all routes & PDF processing logic
+├── app.py              # Flask app with all routes & PDF processing
 ├── stitch_notes.py     # CLI script for quick local stitching
 ├── api/
 │   └── index.py        # Vercel serverless entry point
 ├── static/
-│   ├── style.css       # Global styles
-│   ├── sw.js           # Service worker (PWA)
+│   ├── style.css       # Global styles + animations
+│   ├── sw.js           # Service worker (PWA + offline)
+│   ├── offline.html    # Offline fallback page
 │   ├── manifest.json   # PWA manifest
 │   └── icon-*.png      # App icons
 ├── templates/
-│   ├── base.html       # Base layout
+│   ├── base.html       # Base layout (navbar, sidebar, footer, splash)
 │   ├── index.html      # Dashboard
 │   ├── stitch.html     # Main stitching tool
 │   ├── features.html   # Features page
 │   ├── how_it_works.html
 │   ├── guide.html
 │   ├── about.html
-│   └── 404.html
+│   ├── 404.html        # Not found page
+│   └── 500.html        # Server error page
 ├── Dockerfile
 ├── vercel.json
 └── requirements.txt
@@ -120,9 +138,11 @@ Noteforge/
 
 ## 🌐 Deployment
 
-### Vercel (Serverless)
+### Railway (Recommended)
 
-Already configured via `vercel.json`. Just connect the repo to Vercel and deploy.
+Live at: [noteforge-by-divyanshu.up.railway.app](https://noteforge-by-divyanshu.up.railway.app)
+
+### Vercel (Serverless)
 
 ```bash
 vercel --prod
@@ -139,13 +159,11 @@ docker run -d -p 5000:5000 noteforge
 
 ## 🧑‍💻 CLI Usage
 
-For quick local stitching without the web UI:
-
 ```bash
 python stitch_notes.py "path/to/your-notes.pdf"
 ```
 
-Outputs a `*_stitched.pdf` in the same directory with 2×2 grid, inverted colors, and trimmed whitespace.
+Outputs `*_stitched.pdf` with 2×2 grid, inverted colors, and trimmed whitespace.
 
 ---
 
@@ -154,7 +172,7 @@ Outputs a `*_stitched.pdf` in the same directory with 2×2 grid, inverted colors
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `MAX_CONTENT_LENGTH` | 50 MB | Max upload file size |
-| `A4_WIDTH × A4_HEIGHT` | 3508 × 2480 | A4 landscape at 300 DPI |
+| Page sizes | A4, Letter, A3 | Output page dimensions at 300 DPI |
 | `WHITESPACE_THRESH` | 240 | Threshold for whitespace detection |
 | Max pages per batch | 40 | Large PDFs are split into batches |
 
@@ -172,4 +190,4 @@ PRs welcome! Feel free to open issues for bugs or feature requests.
 
 ---
 
-Built with ⚡ by **Divyanshu Gupta**
+Built with ⚡ by **[Divyanshu Gupta](https://github.com/divyanshu-builds-ui)**

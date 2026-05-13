@@ -11,8 +11,14 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 
-# --- Config ---
-A4_WIDTH, A4_HEIGHT = 3508, 2480  # A4 landscape at 300 DPI
+# Page sizes at 300 DPI (landscape)
+PAGE_SIZES = {
+    'a4': (3508, 2480),
+    'a3': (4961, 3508),
+    'letter': (3300, 2550),
+}
+
+A4_WIDTH, A4_HEIGHT = 3508, 2480  # default
 WHITESPACE_THRESH = 240
 PADDING = 15
 
@@ -26,25 +32,7 @@ GRID_LAYOUTS = {
     '1x4': (1, 4),
 }
 
-# Theme colors
-THEMES = {
-    'dark': {'bg': '#06060b', 'card': '#14141c', 'text': '#e4e4e7', 'accent': '#667eea'},
-    'light': {'bg': '#f8fafc', 'card': '#ffffff', 'text': '#1e293b', 'accent': '#667eea'},
-}
 
-def pdf_to_images(pdf_path, start_page=1, end_page=9999):
-    doc = fitz.open(pdf_path)
-    images = []
-    end_page = min(end_page, len(doc))
-    zoom = 150 / 72
-    mat = fitz.Matrix(zoom, zoom)
-    for i in range(start_page - 1, end_page):
-        page = doc[i]
-        pix = page.get_pixmap(matrix=mat)
-        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-        images.append(img)
-    doc.close()
-    return images
 
 def trim_horizontal_whitespace(img):
     arr = np.array(img.convert('L'))
@@ -71,35 +59,11 @@ def fit_in_cell(img, cell_w, cell_h):
     new_w, new_h = int(w * scale), int(h * scale)
     return img.resize((new_w, new_h), Image.LANCZOS)
 
-def draw_borders(page, cols, rows, cell_w, cell_h):
-    draw = ImageDraw.Draw(page)
-    color = (200, 200, 200)
-    # Vertical lines
-    for c in range(1, cols):
-        x = c * cell_w
-        draw.line([(x, 0), (x, A4_HEIGHT)], fill=color, width=2)
-    # Horizontal lines
-    for r in range(1, rows):
-        y = r * cell_h
-        draw.line([(0, y), (A4_WIDTH, y)], fill=color, width=2)
-
-def add_page_number(page, page_num, total_pages):
-    draw = ImageDraw.Draw(page)
-    text = f"{page_num} / {total_pages}"
-    try:
-        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 28)
-    except:
-        font = ImageFont.load_default()
-    bbox = draw.textbbox((0, 0), text, font=font)
-    tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    x = A4_WIDTH - tw - 30
-    y = A4_HEIGHT - th - 20
-    draw.rounded_rectangle([x-12, y-6, x+tw+12, y+th+6], radius=10, fill=(240,240,240))
-    draw.text((x, y), text, fill=(100, 100, 100), font=font)
 
 def add_watermark(page, watermark_text):
     if not watermark_text:
         return page
+    pw, ph = page.size
     overlay = Image.new('RGBA', page.size, (255, 255, 255, 0))
     draw = ImageDraw.Draw(overlay)
     try:
@@ -109,8 +73,8 @@ def add_watermark(page, watermark_text):
     bbox = draw.textbbox((0, 0), watermark_text, font=font)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
     # Diagonal watermark repeated
-    for y in range(0, A4_HEIGHT, 400):
-        for x in range(0, A4_WIDTH, 600):
+    for y in range(0, ph, 400):
+        for x in range(0, pw, 600):
             txt_img = Image.new('RGBA', (tw + 20, th + 20), (255, 255, 255, 0))
             txt_draw = ImageDraw.Draw(txt_img)
             txt_draw.text((10, 10), watermark_text, fill=(180, 180, 180, 40), font=font)
@@ -127,7 +91,9 @@ def stitch_slides(images, options):
     brightness = options.get('brightness', 1.0)
     contrast = options.get('contrast', 1.0)
     watermark = options.get('watermark', '')
+    page_size = options.get('page_size', 'a4')
 
+    page_w, page_h = PAGE_SIZES.get(page_size, (3508, 2480))
     cols, rows = GRID_LAYOUTS.get(grid, (2, 2))
     slides_per_page = cols * rows
 
@@ -139,15 +105,15 @@ def stitch_slides(images, options):
         img = adjust_brightness_contrast(img, brightness, contrast)
         slides.append(img)
 
-    cell_w = A4_WIDTH // cols
-    cell_h = A4_HEIGHT // rows
+    cell_w = page_w // cols
+    cell_h = page_h // rows
 
     pages = []
     total_pages = -(-len(slides) // slides_per_page)  # ceil division
 
     for i in range(0, len(slides), slides_per_page):
         batch = slides[i:i + slides_per_page]
-        page = Image.new('RGB', (A4_WIDTH, A4_HEIGHT), 'white')
+        page = Image.new('RGB', (page_w, page_h), 'white')
 
         for idx, s in enumerate(batch):
             row, col = idx // cols, idx % cols
@@ -157,11 +123,29 @@ def stitch_slides(images, options):
             page.paste(resized, (x, y))
 
         if borders:
-            draw_borders(page, cols, rows, cell_w, cell_h)
+            draw = ImageDraw.Draw(page)
+            color = (200, 200, 200)
+            for c in range(1, cols):
+                x = c * cell_w
+                draw.line([(x, 0), (x, page_h)], fill=color, width=2)
+            for r in range(1, rows):
+                y = r * cell_h
+                draw.line([(0, y), (page_w, y)], fill=color, width=2)
 
         if page_numbers:
+            draw = ImageDraw.Draw(page)
             page_num = (i // slides_per_page) + 1
-            add_page_number(page, page_num, total_pages)
+            text = f"{page_num} / {total_pages}"
+            try:
+                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 28)
+            except:
+                font = ImageFont.load_default()
+            bbox = draw.textbbox((0, 0), text, font=font)
+            tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+            x = page_w - tw - 30
+            y = page_h - th - 20
+            draw.rounded_rectangle([x-12, y-6, x+tw+12, y+th+6], radius=10, fill=(240,240,240))
+            draw.text((x, y), text, fill=(100, 100, 100), font=font)
 
         if watermark:
             page = add_watermark(page, watermark)
@@ -176,6 +160,10 @@ def stitch_slides(images, options):
 def page_not_found(e):
     return render_template('404.html'), 404
 
+@app.errorhandler(500)
+def internal_error(e):
+    return render_template('500.html'), 500
+
 @app.errorhandler(413)
 def file_too_large(e):
     return jsonify({'error': 'File too large. Max 50 MB allowed.', 'success': False}), 413
@@ -183,6 +171,10 @@ def file_too_large(e):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/health')
+def health():
+    return jsonify({'status': 'ok'}), 200
 
 @app.route('/stitch')
 def stitch():
@@ -218,15 +210,24 @@ def get_page_count():
     try:
         doc = fitz.open(filepath)
         count = len(doc)
+        # Generate first page thumbnail
+        zoom = 100 / 72
+        mat = fitz.Matrix(zoom, zoom)
+        pix = doc[0].get_pixmap(matrix=mat)
+        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
         doc.close()
-        return jsonify({'total_pages': count})
+        buf = io.BytesIO()
+        img.thumbnail((400, 300), Image.LANCZOS)
+        img.save(buf, format='JPEG', quality=70)
+        thumb = base64.b64encode(buf.getvalue()).decode()
+        return jsonify({'total_pages': count, 'preview': thumb})
     finally:
         os.remove(filepath)
 
 @app.route('/generate', methods=['POST'])
 def generate():
-    file = request.files.get('pdf')
-    if not file:
+    files = request.files.getlist('pdf')
+    if not files or not files[0].filename:
         return jsonify({'error': 'No file uploaded'}), 400
 
     start_page = int(request.form.get('start_page', 1))
@@ -238,16 +239,28 @@ def generate():
     brightness = float(request.form.get('brightness', 1.0))
     contrast = float(request.form.get('contrast', 1.0))
     watermark = request.form.get('watermark', '').strip()
+    page_size = request.form.get('page_size', 'a4')
+    skip_pages_str = request.form.get('skip_pages', '').strip()
+    compress = request.form.get('compress', 'off') == 'on'
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    filename = f"{uuid.uuid4().hex}.pdf"
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    file.save(filepath)
+    saved_paths = []
 
     try:
-        doc = fitz.open(filepath)
-        total = len(doc)
-        doc.close()
+        # Save all uploaded PDFs
+        for file in files:
+            filename = f"{uuid.uuid4().hex}.pdf"
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            saved_paths.append(filepath)
+
+        # Get total pages across all PDFs
+        total = 0
+        for fp in saved_paths:
+            doc = fitz.open(fp)
+            total += len(doc)
+            doc.close()
+
         end_page = min(end_page, total)
 
         if end_page - start_page + 1 > 40:
@@ -257,13 +270,46 @@ def generate():
                 batches.append(f"{b_start}-{b_end}")
             return jsonify({
                 'success': False,
-                'error': f'Max 40 pages per batch. Your PDF has {total} pages.',
+                'error': f'Max 40 pages per batch. Total pages: {total}.',
                 'tip': f'Process in {len(batches)} batches: ' + ', '.join(batches),
                 'total_pages': total,
                 'suggested_batches': batches
             }), 400
 
-        images = pdf_to_images(filepath, start_page, end_page)
+        # Extract images from all PDFs in sequence
+        all_images = []
+        for fp in saved_paths:
+            doc = fitz.open(fp)
+            zoom = 150 / 72
+            mat = fitz.Matrix(zoom, zoom)
+            for i in range(len(doc)):
+                page = doc[i]
+                pix = page.get_pixmap(matrix=mat)
+                img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                all_images.append(img)
+            doc.close()
+
+        # Apply page range on combined images
+        images = all_images[start_page - 1:end_page]
+
+        # Parse and apply skip pages
+        skip_set = set()
+        if skip_pages_str:
+            for part in skip_pages_str.split(','):
+                part = part.strip()
+                if '-' in part:
+                    try:
+                        a, b = part.split('-')
+                        for p in range(int(a), int(b) + 1):
+                            skip_set.add(p)
+                    except:
+                        pass
+                elif part.isdigit():
+                    skip_set.add(int(part))
+
+        if skip_set:
+            images = [img for i, img in enumerate(images) if (start_page + i) not in skip_set]
+
         options = {
             'invert': invert,
             'grid': grid,
@@ -272,12 +318,34 @@ def generate():
             'brightness': brightness,
             'contrast': contrast,
             'watermark': watermark,
+            'page_size': page_size,
         }
         pages, slide_count = stitch_slides(images, options)
 
         output_id = uuid.uuid4().hex
         output_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{output_id}_stitched.pdf")
-        pages[0].save(output_path, format='PDF', save_all=True, append_images=pages[1:], resolution=300)
+
+        if compress:
+            # Save with reduced quality for smaller file size
+            compressed_pages = []
+            for p in pages:
+                buf = io.BytesIO()
+                p.save(buf, format='JPEG', quality=60, optimize=True)
+                buf.seek(0)
+                compressed_pages.append(Image.open(buf).convert('RGB'))
+            compressed_pages[0].save(output_path, format='PDF', save_all=True, append_images=compressed_pages[1:], resolution=150)
+        else:
+            pages[0].save(output_path, format='PDF', save_all=True, append_images=pages[1:], resolution=300)
+
+        # Apply password protection if requested
+        pdf_password = request.form.get('pdf_password', '').strip()
+        if pdf_password:
+            doc = fitz.open(output_path)
+            perm = fitz.PDF_PERM_PRINT | fitz.PDF_PERM_COPY | fitz.PDF_PERM_ANNOTATE
+            encrypt_meth = fitz.PDF_ENCRYPT_AES_256
+            doc.save(output_path + '.enc', encryption=encrypt_meth, user_pw=pdf_password, permissions=perm)
+            doc.close()
+            os.replace(output_path + '.enc', output_path)
 
         previews = []
         for page in pages[:4]:
@@ -295,14 +363,17 @@ def generate():
             'slides': slide_count
         })
     finally:
-        os.remove(filepath)
+        for fp in saved_paths:
+            if os.path.exists(fp):
+                os.remove(fp)
 
 @app.route('/download/<output_id>')
 def download(output_id):
     output_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{output_id}_stitched.pdf")
     if not os.path.exists(output_path):
         return "File not found", 404
-    return send_file(output_path, mimetype='application/pdf', as_attachment=True, download_name='stitched_output.pdf')
+    filename = request.args.get('name', 'stitched_output.pdf')
+    return send_file(output_path, mimetype='application/pdf', as_attachment=True, download_name=filename)
 
 if __name__ == '__main__':
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)

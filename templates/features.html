@@ -34,10 +34,19 @@
     }
     .feature-card {
         padding: 28px;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+    }
+    .feature-card:hover {
+        transform: translateY(-6px) scale(1.02);
     }
     .feature-card .f-icon {
         font-size: 2rem;
         margin-bottom: 12px;
+        display: inline-block;
+        transition: transform 0.3s;
+    }
+    .feature-card:hover .f-icon {
+        transform: scale(1.2) rotate(-5deg);
     }
     .feature-card h3 {
         font-size: 1.05rem;
@@ -76,8 +85,15 @@
         font-size: 2rem;
         font-weight: 700;
         background: linear-gradient(135deg, #667eea, #a78bfa);
+        background-size: 200% 200%;
+        animation: gradientShift 3s ease infinite;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
     .stat-card .stat-label {
         font-size: 0.72rem;
@@ -104,6 +120,11 @@
         .features-hero h1 { font-size: 1.7rem; }
         .features-grid { grid-template-columns: 1fr; }
         .stats-row { grid-template-columns: 1fr 1fr; }
+        .feature-card { padding: 22px; }
+    }
+    @media (max-width: 400px) {
+        .stats-row { grid-template-columns: 1fr; }
+        .features-hero h1 { font-size: 1.4rem; }
     }
 </style>
 {% endblock %}

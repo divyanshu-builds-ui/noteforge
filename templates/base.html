@@ -2,8 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>{% block title %}NoteForge{% endblock %} — Smart PDF Stitcher</title>
+
+    <!-- Preconnect for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com">
 
     <!-- SEO Meta -->
     <meta name="description" content="NoteForge — Stitch 4 class note slides into one A4 page. Invert colors, trim whitespace, select pages. Save 75% paper & 80% ink while printing.">
@@ -27,7 +32,7 @@
     <meta name="twitter:image" content="https://noteforge-by-divyanshu.up.railway.app/static/og-image.png">
 
     <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23667eea'/%3E%3Cstop offset='100%25' stop-color='%23764ba2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='url(%23g)'/%3E%3Cpath d='M50 20 L60 45 L55 45 L65 70 L58 70 L70 95 L30 60 L42 60 L32 40 L44 40 Z' fill='white'/%3E%3C/svg%3E">
     <meta name="theme-color" content="#667eea">
 
     <!-- PWA -->
@@ -50,21 +55,51 @@
     </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest" defer></script>
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* Critical CSS - prevents blank page while JS loads */
+        .splash-screen { position:fixed;inset:0;background:#06060b;z-index:99999;display:none;align-items:center;justify-content:center; }
+        .splash-screen.active { display:flex; }
+        body { font-family:'Inter',sans-serif;background:#06060b;color:#e4e4e7;min-height:100vh; }
+        /* Fallback if Lucide doesn't load */
+        .nav-lucide { width:18px;height:18px;color:white; }
+        [data-lucide] { display:inline-block;width:18px;height:18px; }
+    </style>
     {% block head %}{% endblock %}
 </head>
 <body>
+
+    <!-- SPLASH SCREEN (First Load) -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-inner">
+            <div class="splash-logo">
+                <div class="splash-logo-icon"><i data-lucide="zap" style="width:40px;height:40px;color:#667eea;"></i></div>
+                <div class="splash-logo-ring"></div>
+                <div class="splash-logo-ring ring-2"></div>
+            </div>
+            <div class="splash-text">
+                <span class="splash-name">NoteForge</span>
+                <span class="splash-tagline">Smart PDF Stitcher</span>
+            </div>
+            <div class="splash-loader">
+                <div class="splash-loader-bar"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- NAVBAR -->
     <nav class="navbar">
         <div class="nav-inner">
             <a href="/" class="nav-brand">
-                <div class="nav-logo">🔥</div>
+                <div class="nav-logo"><i data-lucide="zap" class="nav-lucide"></i></div>
                 <span class="nav-name">NoteForge</span>
                 <span class="nav-tag">BETA</span>
             </a>
             <div class="nav-right">
-                <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
+                <button class="theme-toggle" id="themeToggle" title="Toggle theme" data-tooltip="Switch theme">
+                    <i data-lucide="moon" id="themeIcon"></i>
+                </button>
                 <div class="nav-hamburger" id="hamburgerBtn">
                     <span></span><span></span><span></span>
                 </div>
@@ -77,40 +112,40 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="/" class="nav-brand">
-                <div class="nav-logo">🔥</div>
+                <div class="nav-logo"><i data-lucide="zap" class="nav-lucide"></i></div>
                 <span class="nav-name">NoteForge</span>
             </a>
-            <button class="sidebar-close" id="sidebarClose">✕</button>
+            <button class="sidebar-close" id="sidebarClose"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
         </div>
         <nav class="sidebar-nav">
             <a href="/" class="sidebar-link">
-                <span class="sidebar-icon">🏠</span>
+                <span class="sidebar-icon"><i data-lucide="layout-dashboard"></i></span>
                 <span>Dashboard</span>
             </a>
             <a href="/stitch" class="sidebar-link">
-                <span class="sidebar-icon">⚡</span>
+                <span class="sidebar-icon"><i data-lucide="layers"></i></span>
                 <span>Stitch PDF</span>
             </a>
             <a href="/features" class="sidebar-link">
-                <span class="sidebar-icon">✨</span>
+                <span class="sidebar-icon"><i data-lucide="sparkles"></i></span>
                 <span>Features</span>
             </a>
             <a href="/guide" class="sidebar-link">
-                <span class="sidebar-icon">📖</span>
+                <span class="sidebar-icon"><i data-lucide="book-open"></i></span>
                 <span>User Guide</span>
             </a>
             <a href="/how-it-works" class="sidebar-link">
-                <span class="sidebar-icon">⚙️</span>
+                <span class="sidebar-icon"><i data-lucide="cog"></i></span>
                 <span>How it Works</span>
             </a>
             <a href="/about" class="sidebar-link">
-                <span class="sidebar-icon">👨‍💻</span>
+                <span class="sidebar-icon"><i data-lucide="user"></i></span>
                 <span>About</span>
             </a>
         </nav>
         <div class="sidebar-footer">
             <div class="sidebar-limits">
-                <h5>📋 Limits</h5>
+                <h5><i data-lucide="info" style="width:13px;height:13px;display:inline;vertical-align:middle;margin-right:4px;"></i>Limits</h5>
                 <ul>
                     <li>Max file size: <strong>50 MB</strong></li>
                     <li>Max pages per batch: <strong>40</strong></li>
@@ -126,13 +161,16 @@
         {% block content %}{% endblock %}
     </main>
 
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
     <!-- FOOTER -->
     <footer class="footer">
         <div class="footer-inner">
             <div class="footer-top">
                 <div class="footer-brand-section">
                     <div class="footer-logo">
-                        <span class="nav-logo">🔥</span>
+                        <span class="nav-logo"><i data-lucide="zap" class="nav-lucide"></i></span>
                         <span class="nav-name" style="font-size:1.1rem;">NoteForge</span>
                     </div>
                     <p class="footer-desc">Transform your class notes into print-ready PDFs. Save paper, save ink, save time.</p>
@@ -150,7 +188,7 @@
                     <h4>Limits & Info</h4>
                     <a href="#">Max 50 MB upload</a>
                     <a href="#">Max 40 pages/batch</a>
-                    <a href="#">4 Slides per page</a>
+                    <a href="#">6 Grid layouts</a>
                     <a href="#">A4 Landscape output</a>
                 </div>
             </div>
@@ -164,20 +202,42 @@
     <!-- Page Transition Skeleton -->
     <div class="page-loader" id="pageLoader">
         <div class="page-loader-inner">
-            <div class="skeleton skeleton-box" style="height:40px;margin-bottom:16px;"></div>
+            <div class="page-loader-logo">
+                <div class="nav-logo" style="width:48px;height:48px;"><i data-lucide="zap" style="width:22px;height:22px;color:white;"></i></div>
+            </div>
+            <div class="skeleton skeleton-box" style="height:24px;width:60%;margin:0 auto 16px;"></div>
             <div class="skeleton skeleton-text medium"></div>
             <div class="skeleton skeleton-text short"></div>
-            <div class="skeleton skeleton-box" style="height:100px;margin-top:16px;"></div>
-            <div class="skeleton skeleton-text medium" style="margin-top:12px;"></div>
+            <div class="skeleton-grid">
+                <div class="skeleton skeleton-box" style="height:100px;"></div>
+                <div class="skeleton skeleton-box" style="height:100px;"></div>
+            </div>
+            <div class="skeleton skeleton-text medium" style="margin-top:16px;"></div>
             <div class="skeleton skeleton-text short"></div>
+            <div class="skeleton skeleton-box" style="height:60px;margin-top:12px;"></div>
         </div>
     </div>
 
     <!-- Global Toast -->
     <div class="global-toast" id="globalToast"></div>
 
-    <!-- Sidebar + Theme + PWA + Page Transitions JS -->
+    <!-- Scripts -->
     <script>
+        // Initialize Lucide icons (safe - won't crash if CDN fails)
+        function initIcons() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            } else {
+                // Retry after 1s if CDN is slow
+                setTimeout(() => {
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }, 1500);
+            }
+        }
+        // Run after DOM + deferred scripts
+        if (document.readyState === 'complete') initIcons();
+        else window.addEventListener('load', initIcons);
+
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -187,7 +247,6 @@
             sidebar.classList.add('open');
             sidebarOverlay.classList.add('open');
             document.body.style.overflow = 'hidden';
-            // Animate hamburger to X
             hamburgerBtn.classList.add('active');
         }
         function closeSidebar() {
@@ -201,7 +260,6 @@
         sidebarOverlay.addEventListener('click', closeSidebar);
         sidebarClose.addEventListener('click', closeSidebar);
 
-        // Close sidebar on link click (mobile)
         document.querySelectorAll('.sidebar-link').forEach(link => {
             link.addEventListener('click', () => closeSidebar());
         });
@@ -210,18 +268,22 @@
         const themeToggle = document.getElementById('themeToggle');
         const savedTheme = localStorage.getItem('noteforge-theme') || 'dark';
         document.body.setAttribute('data-theme', savedTheme);
-        themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+        if (savedTheme === 'light') {
+            document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
+            lucide.createIcons();
+        }
 
         themeToggle.addEventListener('click', () => {
             const current = document.body.getAttribute('data-theme');
             const next = current === 'dark' ? 'light' : 'dark';
             document.body.setAttribute('data-theme', next);
             localStorage.setItem('noteforge-theme', next);
-            themeToggle.textContent = next === 'dark' ? '🌙' : '☀️';
-            globalToast(next === 'dark' ? '🌙 Dark mode' : '☀️ Light mode', 'success');
+            document.getElementById('themeIcon').setAttribute('data-lucide', next === 'dark' ? 'moon' : 'sun');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            globalToast(next === 'dark' ? '🌙 Dark mode — only affects website UI' : '☀️ Light mode — only affects website UI', 'success');
         });
 
-        // Page Transition: show skeleton on navigation
+        // Page Transition
         document.querySelectorAll('a[href^="/"]').forEach(link => {
             link.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
@@ -232,12 +294,11 @@
                 setTimeout(() => { window.location.href = href; }, 200);
             });
         });
-        // Hide loader when page loads
         window.addEventListener('load', () => {
             document.getElementById('pageLoader').classList.remove('active');
         });
 
-        // Global Toast function
+        // Global Toast
         function globalToast(msg, type) {
             const t = document.getElementById('globalToast');
             t.textContent = msg;
@@ -248,6 +309,68 @@
         // PWA Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/static/sw.js').catch(() => {});
+        }
+
+        // Splash screen (once per session)
+        (function handleSplash() {
+            const splash = document.getElementById('splashScreen');
+            const seen = sessionStorage.getItem('noteforge-splash-seen');
+
+            if (!seen) {
+                splash.classList.add('active');
+                sessionStorage.setItem('noteforge-splash-seen', '1');
+                setTimeout(() => {
+                    splash.classList.add('fade-out');
+                    setTimeout(() => splash.remove(), 500);
+                }, 1800);
+            } else {
+                splash.remove();
+            }
+        })();
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.navbar');
+            if (window.scrollY > 30) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Floating particles
+        (function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 15; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (8 + Math.random() * 12) + 's';
+                p.style.animationDelay = (Math.random() * 8) + 's';
+                p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+                container.appendChild(p);
+            }
+        })();
+
+        // Scroll reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+
+        // Online/Offline detection
+        window.addEventListener('offline', () => {
+            globalToast('📵 Connection lost. You are offline.', 'error');
+        });
+        window.addEventListener('online', () => {
+            globalToast('✅ Back online!', 'success');
+        });
+        if (!navigator.onLine) {
+            globalToast('📵 You are offline. Some features may not work.', 'error');
         }
     </script>
     {% block scripts %}{% endblock %}

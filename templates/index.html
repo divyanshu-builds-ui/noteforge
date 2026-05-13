@@ -36,6 +36,7 @@
         text-decoration: none;
         position: relative;
         overflow: hidden;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s;
     }
     .action-card::before {
         content: '';
@@ -43,9 +44,12 @@
         inset: 0;
         background: linear-gradient(135deg, rgba(102,126,234,0.05), transparent);
         opacity: 0;
-        transition: opacity 0.3s;
+        transition: opacity 0.4s;
     }
     .action-card:hover::before { opacity: 1; }
+    .action-card:hover {
+        transform: translateY(-6px) scale(1.02);
+    }
     .action-icon {
         font-size: 2rem;
         margin-bottom: 10px;
@@ -88,8 +92,15 @@
         font-size: 1.6rem;
         font-weight: 700;
         background: linear-gradient(135deg, #667eea, #a78bfa);
+        background-size: 200% 200%;
+        animation: gradientShift 3s ease infinite;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
     .stat-box .stat-label {
         font-size: 0.7rem;
@@ -129,7 +140,8 @@
     }
     .history-item:hover {
         border-color: var(--border-hover);
-        transform: translateX(4px);
+        transform: translateX(6px);
+        box-shadow: 0 4px 20px rgba(102,126,234,0.08);
     }
     .history-left {
         display: flex;
@@ -172,6 +184,15 @@
         color: #22c55e;
         font-size: 0.68rem;
         font-weight: 500;
+    }
+    .history-expired {
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: rgba(239,68,68,0.08);
+        color: #ef4444;
+        font-size: 0.62rem;
+        font-weight: 500;
+        cursor: help;
     }
     .history-empty {
         text-align: center;
@@ -218,6 +239,11 @@
         .stats-grid { grid-template-columns: 1fr 1fr; }
         .shortcuts-grid { grid-template-columns: 1fr; }
         .history-right { display: none; }
+        .action-card { padding: 20px 16px; }
+    }
+    @media (max-width: 400px) {
+        .stats-grid { grid-template-columns: 1fr; }
+        .dash-greeting h1 { font-size: 1.2rem; }
     }
 </style>
 {% endblock %}
@@ -226,31 +252,31 @@
 <div class="dashboard">
     <!-- Greeting -->
     <div class="dash-greeting">
-        <h1>⚡ NoteForge</h1>
+        <h1><i data-lucide="zap" style="width:28px;height:28px;display:inline;vertical-align:middle;color:#667eea;"></i> NoteForge</h1>
         <p>Stitch class note slides into print-ready A4 PDFs.</p>
     </div>
 
     <!-- Quick Actions -->
     <div class="quick-actions">
-        <a href="/stitch" class="card action-card primary">
-            <div class="action-icon">⚡</div>
+        <a href="/stitch" class="card action-card primary card-glow">
+            <div class="action-icon"><i data-lucide="layers" style="width:32px;height:32px;color:#667eea;"></i></div>
             <h3>Start Stitching</h3>
             <p>Upload & convert PDF</p>
         </a>
         <a href="/features" class="card action-card">
-            <div class="action-icon">✨</div>
+            <div class="action-icon"><i data-lucide="sparkles" style="width:32px;height:32px;color:#a78bfa;"></i></div>
             <h3>Features</h3>
             <p>12 powerful tools</p>
         </a>
         <a href="/how-it-works" class="card action-card">
-            <div class="action-icon">📖</div>
+            <div class="action-icon"><i data-lucide="book-open" style="width:32px;height:32px;color:#f093fb;"></i></div>
             <h3>How it Works</h3>
             <p>4-step process</p>
         </a>
     </div>
 
     <!-- Stats -->
-    <div class="section-title">📊 Session Stats <span style="font-size:0.65rem;color:var(--text-dim);font-weight:400;margin-left:8px;">stored in this browser only</span></div>
+    <div class="section-title"><i data-lucide="bar-chart-3" style="width:18px;height:18px;display:inline;vertical-align:middle;color:#667eea;"></i> Session Stats <span style="font-size:0.65rem;color:var(--text-dim);font-weight:400;margin-left:8px;">stored in this browser only</span></div>
     <div class="stats-grid">
         <div class="card stat-box">
             <div class="stat-num" id="statConversions">0</div>
@@ -272,18 +298,19 @@
 
     <!-- Recent History -->
     <div class="history-section">
-        <div class="section-title">🕐 Recent Activity <span style="font-size:0.65rem;color:var(--text-dim);font-weight:400;margin-left:8px;">this device only</span></div>
+        <div class="section-title"><i data-lucide="clock" style="width:18px;height:18px;display:inline;vertical-align:middle;color:#667eea;"></i> Recent Activity <span style="font-size:0.65rem;color:var(--text-dim);font-weight:400;margin-left:8px;">this device only</span></div>
         <div class="history-list" id="historyList">
             <div class="history-empty">
                 <div class="empty-icon">📭</div>
                 <p>No conversions yet. Start stitching to see your history here!</p>
+                <small style="color:var(--text-dim);font-size:0.7rem;margin-top:8px;display:block;">Note: Files are deleted after processing. Download your PDF immediately after generation.</small>
             </div>
         </div>
     </div>
 
     <!-- Keyboard Shortcuts -->
     <div class="card shortcuts-card">
-        <div class="section-title" style="margin-bottom:12px;">⌨️ Keyboard Shortcuts</div>
+        <div class="section-title" style="margin-bottom:12px;"><i data-lucide="keyboard" style="width:18px;height:18px;display:inline;vertical-align:middle;color:#667eea;"></i> Keyboard Shortcuts</div>
         <div class="shortcuts-grid">
             <div class="shortcut-item"><kbd>Ctrl+U</kbd> Upload file</div>
             <div class="shortcut-item"><kbd>Ctrl+G</kbd> Generate PDF</div>
@@ -295,6 +322,18 @@
 
 {% block scripts %}
 <script>
+    // Animated counter
+    function animateCounter(el, target, suffix = '') {
+        if (target === 0) { el.textContent = '0' + suffix; return; }
+        let current = 0;
+        const step = Math.max(1, Math.floor(target / 30));
+        const interval = setInterval(() => {
+            current += step;
+            if (current >= target) { current = target; clearInterval(interval); }
+            el.textContent = current + suffix;
+        }, 30);
+    }
+
     // Load stats from localStorage
     function loadDashboard() {
         const history = JSON.parse(localStorage.getItem('noteforge-history') || '[]');
@@ -304,17 +343,17 @@
         const totalSaved = history.reduce((a, h) => a + ((h.pages || 0) - (h.output_pages || 0)), 0);
         const totalTime = history.reduce((a, h) => a + (h.time || 0), 0);
         
-        document.getElementById('statConversions').textContent = history.length;
-        document.getElementById('statSlides').textContent = totalSlides;
-        document.getElementById('statSaved').textContent = totalSaved;
-        document.getElementById('statTime').textContent = totalTime + 's';
+        animateCounter(document.getElementById('statConversions'), history.length);
+        animateCounter(document.getElementById('statSlides'), totalSlides);
+        animateCounter(document.getElementById('statSaved'), totalSaved);
+        animateCounter(document.getElementById('statTime'), totalTime, 's');
 
         // History list
         const list = document.getElementById('historyList');
         if (history.length === 0) return;
 
-        list.innerHTML = history.slice(0, 8).map(h => `
-            <div class="history-item">
+        list.innerHTML = history.slice(0, 8).map((h, i) => `
+            <div class="history-item scroll-reveal" style="transition-delay: ${i * 0.05}s">
                 <div class="history-left">
                     <div class="history-icon">📄</div>
                     <div class="history-info">
@@ -326,10 +365,20 @@
                     <span>${h.pages || 0} slides → ${h.output_pages || 0} pages</span>
                     <span class="history-badge">${h.grid || '2x2'}</span>
                     <span>${h.time || 0}s</span>
+                    <span class="history-expired" title="Files are deleted after processing">expired</span>
                 </div>
             </div>
         `).join('');
+
+        // Observe new scroll-reveal elements
+        document.querySelectorAll('.scroll-reveal').forEach(el => {
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+            }, { threshold: 0.1 });
+            obs.observe(el);
+        });
     }
     loadDashboard();
+    lucide.createIcons();
 </script>
 {% endblock %}

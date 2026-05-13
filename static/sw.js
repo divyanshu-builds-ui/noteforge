@@ -1,7 +1,8 @@
-const CACHE_NAME = 'noteforge-v1';
+const CACHE_NAME = 'noteforge-v2';
 const STATIC_ASSETS = [
     '/',
     '/static/style.css',
+    '/static/offline.html',
     '/how-it-works',
     '/about',
 ];
@@ -24,13 +25,21 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
     // Don't cache POST requests (file uploads)
     if (event.request.method !== 'GET') return;
-    
+
     event.respondWith(
         caches.match(event.request).then(cached => {
             const fetched = fetch(event.request).then(response => {
-                const clone = response.clone();
-                caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+                if (response && response.status === 200) {
+                    const clone = response.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+                }
                 return response;
+            }).catch(() => {
+                // If it's a navigation request, show offline page
+                if (event.request.mode === 'navigate') {
+                    return caches.match('/static/offline.html');
+                }
+                return cached;
             });
             return cached || fetched;
         })

@@ -1,12 +1,12 @@
 {
   "name": "NoteForge — Smart PDF Stitcher",
   "short_name": "NoteForge",
-  "description": "Stitch class note slides into print-ready A4 PDFs. Save paper & ink.",
+  "description": "Stitch class note slides into print-ready PDFs. Save paper & ink.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#06060b",
   "theme_color": "#667eea",
-  "orientation": "portrait",
+  "orientation": "any",
   "icons": [
     {
       "src": "/static/icon-192.png",

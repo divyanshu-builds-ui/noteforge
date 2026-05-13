@@ -52,6 +52,84 @@
 
 
 
+    /* Step Progress Bar */
+    .step-progress {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        margin-bottom: 32px;
+        padding: 20px 10px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        backdrop-filter: blur(12px);
+    }
+    .step-progress-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        position: relative;
+    }
+    .step-circle {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+        border: 2px solid rgba(255,255,255,0.1);
+        color: var(--text-dim);
+        background: rgba(0,0,0,0.2);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .step-progress-item.active .step-circle {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-color: #667eea;
+        color: white;
+        box-shadow: 0 0 16px rgba(102,126,234,0.4);
+        transform: scale(1.1);
+    }
+    .step-progress-item.done .step-circle {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        border-color: #22c55e;
+        color: white;
+        box-shadow: 0 0 12px rgba(34,197,94,0.3);
+    }
+    .step-label {
+        font-size: 0.68rem;
+        color: var(--text-dim);
+        font-weight: 500;
+        transition: color 0.3s;
+    }
+    .step-progress-item.active .step-label {
+        color: #667eea;
+        font-weight: 600;
+    }
+    .step-progress-item.done .step-label {
+        color: #22c55e;
+    }
+    .step-line {
+        width: 48px; height: 3px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 3px;
+        margin: 0 8px;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    .step-line-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #667eea, #22c55e);
+        border-radius: 3px;
+        transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .step-line-fill.filled {
+        width: 100%;
+    }
+
     /* Features */
     .features-grid {
         display: grid;
@@ -103,18 +181,50 @@
         padding: 36px 20px;
         text-align: center;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         background: rgba(102,126,234,0.02);
+        position: relative;
+        overflow: hidden;
+    }
+    .upload-area::after {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: 14px;
+        background: conic-gradient(from 0deg, transparent, rgba(102,126,234,0.3), transparent, rgba(167,139,250,0.3), transparent);
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.4s;
+        animation: spin 4s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .upload-area:hover::after, .upload-area.dragover::after {
+        opacity: 1;
     }
     .upload-area:hover, .upload-area.dragover {
         border-color: #667eea;
         background: rgba(102,126,234,0.06);
+        transform: scale(1.01);
     }
     .upload-area.has-file {
         border-color: #22c55e;
         background: rgba(34,197,94,0.04);
+        animation: none;
     }
-    .upload-icon { font-size: 2.2rem; margin-bottom: 10px; }
+    .upload-area.has-file::after { opacity: 0; }
+    .upload-area.drop-success {
+        border-color: #22c55e;
+        background: rgba(34,197,94,0.06);
+    }
+    .upload-area.drop-success .upload-icon {
+        animation: dropBounce 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes dropBounce {
+        0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+        50% { transform: scale(1.3) rotate(5deg); }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    .upload-icon { font-size: 2.2rem; margin-bottom: 10px; animation: float 3s ease-in-out infinite; }
     .upload-text { color: #71717a; font-size: 0.85rem; }
     .upload-text strong { color: #667eea; }
     .file-badge {
@@ -131,6 +241,30 @@
         font-size: 0.8rem;
     }
     .file-badge.show { display: flex; }
+    .quick-preview {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        margin-top: 14px;
+        padding: 12px;
+        background: rgba(0,0,0,0.2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        animation: fadeInUp 0.4s ease;
+    }
+    .quick-preview.show { display: flex; }
+    .quick-preview img {
+        max-width: 100%;
+        max-height: 180px;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.06);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .quick-preview-label {
+        font-size: 0.68rem;
+        color: var(--text-dim);
+    }
     input[type="file"] { display: none; }
 
     /* Form */
@@ -210,18 +344,52 @@
         gap: 6px;
     }
     .batch-tip .batch-item {
-        padding: 4px 10px;
+        padding: 6px 12px;
         background: rgba(102,126,234,0.08);
-        border: 1px solid rgba(102,126,234,0.15);
+        border: 1px solid rgba(102,126,234,0.2);
         border-radius: 6px;
         color: #667eea;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    .batch-tip .batch-item::before {
+        content: '→';
+        margin-right: 4px;
+        opacity: 0;
+        transition: opacity 0.2s, margin 0.2s;
+    }
+    .batch-tip .batch-item:hover::before {
+        opacity: 1;
+        margin-right: 6px;
     }
     .batch-tip .batch-item:hover {
-        background: rgba(102,126,234,0.15);
-        transform: scale(1.05);
+        background: rgba(102,126,234,0.18);
+        border-color: #667eea;
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 4px 12px rgba(102,126,234,0.2);
+    }
+    .batch-tip .batch-item:active {
+        transform: scale(0.97);
+    }
+    .batch-tip .batch-hint {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 10px;
+        padding: 8px 12px;
+        background: rgba(102,126,234,0.04);
+        border: 1px dashed rgba(102,126,234,0.2);
+        border-radius: 6px;
+        font-size: 0.72rem;
+        color: #667eea;
+        animation: batchHintPulse 2s ease-in-out infinite;
+    }
+    @keyframes batchHintPulse {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; border-color: rgba(102,126,234,0.4); }
     }
     .toggle-row {
         display: flex;
@@ -271,14 +439,18 @@
         border-radius: 10px;
         text-align: center;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         background: rgba(0,0,0,0.2);
     }
-    .grid-option:hover { border-color: rgba(102,126,234,0.3); }
+    .grid-option:hover {
+        border-color: rgba(102,126,234,0.3);
+        transform: translateY(-2px);
+    }
     .grid-option.active {
         border-color: #667eea;
         background: rgba(102,126,234,0.08);
-        box-shadow: 0 0 12px rgba(102,126,234,0.15);
+        box-shadow: 0 0 20px rgba(102,126,234,0.15);
+        transform: translateY(-2px) scale(1.03);
     }
     .grid-option small { display: block; margin-top: 6px; font-size: 0.7rem; color: #71717a; }
     .grid-option.active small { color: #667eea; }
@@ -302,6 +474,41 @@
     .g1x4 { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr 1fr 1fr; }
 
     .toggles-group { margin-bottom: 16px; }
+
+    .pagesize-selector {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    .pagesize-option {
+        padding: 12px 8px;
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        background: rgba(0,0,0,0.2);
+    }
+    .pagesize-option strong {
+        display: block;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 2px;
+    }
+    .pagesize-option small {
+        font-size: 0.65rem;
+        color: var(--text-dim);
+    }
+    .pagesize-option:hover {
+        border-color: rgba(102,126,234,0.3);
+        transform: translateY(-2px);
+    }
+    .pagesize-option.active {
+        border-color: #667eea;
+        background: rgba(102,126,234,0.08);
+        box-shadow: 0 0 16px rgba(102,126,234,0.15);
+    }
+    .pagesize-option.active strong { color: #667eea; }
 
     .sliders-group { margin-top: 16px; }
     .slider-field {
@@ -355,17 +562,88 @@
     }
     .watermark-input:focus { outline: none; border-color: #667eea; }
     .watermark-input::placeholder { color: #52525b; }
+    .password-field {
+        position: relative;
+    }
+    .password-field .watermark-input {
+        padding-right: 44px;
+    }
+    .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-dim);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+        transition: color 0.2s;
+    }
+    .password-toggle:hover { color: var(--accent); }
+
+    .btn-reset {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 12px;
+        border: 1px solid rgba(239,68,68,0.2);
+        border-radius: 7px;
+        background: rgba(239,68,68,0.05);
+        color: #ef4444;
+        font-size: 0.72rem;
+        font-weight: 500;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .btn-reset:hover {
+        background: rgba(239,68,68,0.1);
+        border-color: #ef4444;
+        transform: translateY(-1px);
+    }
+    .btn-reset:active {
+        transform: scale(0.95);
+    }
 
     .btn-generate {
         width: 100%;
         padding: 14px;
         border-radius: 10px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-generate:not(:disabled):hover {
+        transform: translateY(-3px) scale(1.01);
+        box-shadow: 0 10px 30px rgba(102,126,234,0.4);
     }
     .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .generate-hint {
+        text-align: center;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        margin-top: 10px;
+        transition: opacity 0.3s;
+    }
+    .generate-hint.hidden { opacity: 0; pointer-events: none; }
+    .generate-estimate {
+        text-align: center;
+        font-size: 0.75rem;
+        color: #667eea;
+        margin-top: 8px;
+        padding: 6px 12px;
+        background: rgba(102,126,234,0.05);
+        border: 1px solid rgba(102,126,234,0.1);
+        border-radius: 8px;
+        display: none;
+    }
+    .generate-estimate.show { display: block; }
     .btn-download {
         width: 100%;
         padding: 14px;
         background: linear-gradient(135deg, #22c55e, #16a34a);
+        background-size: 200% 200%;
+        animation: gradientShift 3s ease infinite;
         color: white;
         box-shadow: 0 4px 16px rgba(34,197,94,0.25);
         border-radius: 10px;
@@ -374,19 +652,167 @@
         font-weight: 600;
         font-family: 'Inter', sans-serif;
         cursor: pointer;
-        transition: all 0.25s;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         display: flex; align-items: center; justify-content: center; gap: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-download::before {
+        content: '';
+        position: absolute;
+        top: -50%; left: -50%;
+        width: 200%; height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        transform: rotate(45deg);
+        transition: left 0.5s;
+    }
+    .btn-download:hover::before {
+        left: 100%;
     }
     .btn-download:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 24px rgba(34,197,94,0.4);
+        transform: translateY(-3px) scale(1.01);
+        box-shadow: 0 8px 30px rgba(34,197,94,0.5);
     }
+    .btn-print {
+        width: 100%;
+        padding: 14px;
+        margin-top: 10px;
+        background: transparent;
+        border: 1px solid rgba(102,126,234,0.25);
+        border-radius: 10px;
+        color: #667eea;
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .btn-print:hover {
+        background: rgba(102,126,234,0.08);
+        border-color: #667eea;
+        transform: translateY(-2px);
+    }
+    .btn-print:active {
+        transform: scale(0.97);
+    }
+    .action-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .btn-share {
+        width: 100%;
+        padding: 14px;
+        background: transparent;
+        border: 1px solid rgba(167,139,250,0.25);
+        border-radius: 10px;
+        color: #a78bfa;
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .btn-share:hover {
+        background: rgba(167,139,250,0.08);
+        border-color: #a78bfa;
+        transform: translateY(-2px);
+    }
+    .btn-share:active { transform: scale(0.97); }
+    .share-menu {
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 10px;
+        padding: 14px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .share-menu.show { display: flex; }
+    .share-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        border: none;
+        background: none;
+        font-family: 'Inter', sans-serif;
+        color: var(--text-muted);
+    }
+    .share-item:hover { background: rgba(255,255,255,0.04); transform: translateX(4px); }
+    .share-item.whatsapp:hover { color: #25D366; background: rgba(37,211,102,0.06); }
+    .share-item.telegram:hover { color: #0088cc; background: rgba(0,136,204,0.06); }
+    .share-item.copy-link:hover { color: #667eea; background: rgba(102,126,234,0.06); }
+    .share-item.native-share:hover { color: #a78bfa; background: rgba(167,139,250,0.06); }
 
     /* Preview */
     .preview-section { display: none; }
     .preview-section.show {
         display: block;
-        animation: scaleIn 0.4s ease-out;
+        animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .success-banner {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 20px;
+        background: rgba(34,197,94,0.06);
+        border: 1px solid rgba(34,197,94,0.2);
+        border-radius: 12px;
+        margin-bottom: 16px;
+        animation: successPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+    }
+    @keyframes successPop {
+        0% { opacity: 0; transform: scale(0.9) translateY(10px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .success-banner-icon {
+        width: 40px; height: 40px;
+        background: rgba(34,197,94,0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        animation: successPulse 2s ease-in-out infinite;
+    }
+    @keyframes successPulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.2); }
+        50% { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+    }
+    .success-banner-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .success-banner-text strong {
+        font-size: 0.9rem;
+        color: #22c55e;
+    }
+    .success-banner-text span {
+        font-size: 0.75rem;
+        color: var(--text-muted);
     }
     .preview-stats {
         text-align: center;
@@ -423,13 +849,14 @@
         justify-content: center;
         gap: 16px;
     }
-    .loading-overlay.active { display: flex; }
+    .loading-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
     .loader {
         width: 48px; height: 48px;
         border: 3px solid rgba(102,126,234,0.15);
         border-top-color: #667eea;
         border-radius: 50%;
         animation: spin 0.7s linear infinite;
+        box-shadow: 0 0 20px rgba(102,126,234,0.2);
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .loading-msg { font-size: 1.1rem; font-weight: 500; }
@@ -484,6 +911,28 @@
     .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; animation: fadeInUp 0.4s ease-out; }
     .toast.success { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25); color: #22c55e; }
     .toast.error { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25); color: #ef4444; }
+    .toast.info { background: rgba(102,126,234,0.12); border: 1px solid rgba(102,126,234,0.25); color: #667eea; }
+
+    /* Confetti */
+    .confetti-container {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        pointer-events: none;
+        z-index: 99999;
+        overflow: hidden;
+    }
+    .confetti-piece {
+        position: absolute;
+        top: -20px;
+        opacity: 0;
+        animation: confettiFall ease-out forwards;
+    }
+    @keyframes confettiFall {
+        0% { transform: translateY(0) rotate(0deg) scale(0); opacity: 1; }
+        10% { opacity: 1; transform: translateY(10vh) rotate(90deg) scale(1); }
+        100% { transform: translateY(105vh) rotate(720deg) scale(0.5); opacity: 0; }
+    }
 
     @media (max-width: 768px) {
         .hero { padding: 50px 16px 30px; }
@@ -491,6 +940,20 @@
         .features-grid { grid-template-columns: 1fr; gap: 12px; padding: 0 16px 40px; }
         .tool-section { padding: 0 14px 40px; }
         .preview-grid { grid-template-columns: 1fr; }
+        .form-grid { grid-template-columns: 1fr; }
+        .grid-selector { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .loading-overlay { padding: 24px; }
+        .loading-steps { font-size: 0.75rem; }
+        .step-progress { padding: 16px 8px; gap: 0; }
+        .step-line { width: 24px; margin: 0 4px; margin-bottom: 20px; }
+        .step-circle { width: 30px; height: 30px; font-size: 0.7rem; }
+        .step-label { font-size: 0.6rem; }
+    }
+    @media (max-width: 400px) {
+        .grid-selector { grid-template-columns: repeat(2, 1fr); }
+        .hero h1 { font-size: 1.4rem; }
+        .step-line { width: 16px; }
+        .step-label { display: none; }
     }
 </style>
 {% endblock %}
@@ -498,9 +961,27 @@
 {% block content %}
 <!-- Tool -->
 <section class="tool-section" id="tool">
-    <div class="section-header">
-        <h2>Start Stitching</h2>
-        <p>Upload, configure, generate — it's that simple.</p>
+    <!-- Step Progress Bar -->
+    <div class="step-progress">
+        <div class="step-progress-item active" data-step="1">
+            <div class="step-circle">1</div>
+            <span class="step-label">Upload</span>
+        </div>
+        <div class="step-line"><div class="step-line-fill" id="line1"></div></div>
+        <div class="step-progress-item" data-step="2">
+            <div class="step-circle">2</div>
+            <span class="step-label">Configure</span>
+        </div>
+        <div class="step-line"><div class="step-line-fill" id="line2"></div></div>
+        <div class="step-progress-item" data-step="3">
+            <div class="step-circle">3</div>
+            <span class="step-label">Generate</span>
+        </div>
+        <div class="step-line"><div class="step-line-fill" id="line3"></div></div>
+        <div class="step-progress-item" data-step="4">
+            <div class="step-circle">4</div>
+            <span class="step-label">Download</span>
+        </div>
     </div>
 
     <!-- Step 1 -->
@@ -510,13 +991,17 @@
             <div class="card-title">Upload your PDF</div>
         </div>
         <div class="upload-area" id="uploadArea">
-            <div class="upload-icon">📁</div>
-            <p class="upload-text">Drag & drop or <strong>click to browse</strong></p>
+            <div class="upload-icon"><i data-lucide="upload-cloud" style="width:40px;height:40px;color:#667eea;"></i></div>
+            <p class="upload-text">Drag & drop or <strong>click to browse</strong> (multiple PDFs supported)</p>
         </div>
         <div class="file-badge" id="fileBadge">
-            <span>✅</span> <span id="fileNameText"></span>
+            <span><i data-lucide="check-circle" style="width:16px;height:16px;color:#22c55e;"></i></span> <span id="fileNameText"></span>
         </div>
-        <input type="file" id="fileInput" accept=".pdf">
+        <div class="quick-preview" id="quickPreview">
+            <img id="quickPreviewImg" alt="First page preview">
+            <span class="quick-preview-label">First page preview</span>
+        </div>
+        <input type="file" id="fileInput" accept=".pdf" multiple>
     </div>
 
     <!-- Step 2 -->
@@ -534,6 +1019,11 @@
                 <label>To Page</label>
                 <input type="number" id="endPage" placeholder="Last">
             </div>
+        </div>
+        <div class="form-field" style="margin-bottom:12px;">
+            <label>Skip Pages (optional)</label>
+            <input type="text" id="skipPages" placeholder="e.g. 3, 7, 12-15" class="watermark-input" style="margin-bottom:4px;">
+            <small style="color:#52525b;font-size:0.68rem;">Comma-separated pages or ranges to exclude from output</small>
         </div>
         <button type="button" class="btn-allpages" id="allPagesBtn" disabled>📄 All Pages</button>
         <div class="limit-hint">
@@ -561,29 +1051,32 @@
 
         <!-- Grid Layout -->
         <div class="option-group">
-            <label class="option-label">📰 Grid Layout</label>
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+                <label class="option-label" style="margin-bottom:0;">📰 Grid Layout</label>
+                <button type="button" class="btn-reset" id="resetBtn" data-tooltip="Reset all to defaults"><i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i> Reset</button>
+            </div>
             <div class="grid-selector" id="gridSelector">
-                <div class="grid-option active" data-grid="2x2">
+                <div class="grid-option active" data-grid="2x2" data-tooltip="4 slides per page">
                     <div class="grid-preview g2x2"><span></span><span></span><span></span><span></span></div>
                     <small>2×2</small>
                 </div>
-                <div class="grid-option" data-grid="2x1">
+                <div class="grid-option" data-grid="2x1" data-tooltip="2 slides per page">
                     <div class="grid-preview g2x1"><span></span><span></span></div>
                     <small>2×1</small>
                 </div>
-                <div class="grid-option" data-grid="3x2">
+                <div class="grid-option" data-grid="3x2" data-tooltip="6 slides per page">
                     <div class="grid-preview g3x2"><span></span><span></span><span></span><span></span><span></span><span></span></div>
                     <small>3×2</small>
                 </div>
-                <div class="grid-option" data-grid="3x3">
+                <div class="grid-option" data-grid="3x3" data-tooltip="9 slides per page">
                     <div class="grid-preview g3x3"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
                     <small>3×3</small>
                 </div>
-                <div class="grid-option" data-grid="1x2">
+                <div class="grid-option" data-grid="1x2" data-tooltip="2 slides stacked">
                     <div class="grid-preview g1x2"><span></span><span></span></div>
                     <small>1×2</small>
                 </div>
-                <div class="grid-option" data-grid="1x4">
+                <div class="grid-option" data-grid="1x4" data-tooltip="4 slides stacked">
                     <div class="grid-preview g1x4"><span></span><span></span><span></span><span></span></div>
                     <small>1×4</small>
                 </div>
@@ -612,6 +1105,35 @@
                     <span class="slider"></span>
                 </label>
             </div>
+            <div class="toggle-row" style="margin-top:8px;">
+                <div class="toggle-label">
+                    📦 Compress Output
+                    <small>Smaller file size (~40-60% reduction)</small>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" id="compressToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Page Size -->
+        <div class="option-group">
+            <label class="option-label">📄 Output Page Size</label>
+            <div class="pagesize-selector" id="pagesizeSelector">
+                <div class="pagesize-option active" data-size="a4">
+                    <strong>A4</strong>
+                    <small>210×297mm</small>
+                </div>
+                <div class="pagesize-option" data-size="letter">
+                    <strong>Letter</strong>
+                    <small>8.5×11in</small>
+                </div>
+                <div class="pagesize-option" data-size="a3">
+                    <strong>A3</strong>
+                    <small>297×420mm</small>
+                </div>
+            </div>
         </div>
 
         <!-- Brightness & Contrast -->
@@ -632,6 +1154,18 @@
             <input type="text" id="watermarkInput" placeholder="e.g. Divyanshu Gupta" class="watermark-input">
             <small style="color:#52525b; font-size:0.7rem;">Light diagonal text on every page</small>
         </div>
+
+        <!-- Password Protection -->
+        <div class="option-group" style="margin-top:16px;">
+            <label class="option-label">🔒 Password Protection (optional)</label>
+            <div class="password-field">
+                <input type="password" id="pdfPasswordInput" placeholder="Set a password to lock PDF" class="watermark-input" autocomplete="new-password">
+                <button type="button" class="password-toggle" id="passwordToggleBtn" onclick="togglePasswordVisibility()">
+                    <i data-lucide="eye" id="passwordEyeIcon" style="width:16px;height:16px;"></i>
+                </button>
+            </div>
+            <small style="color:#52525b; font-size:0.7rem;">PDF will require this password to open. Leave empty for no protection.</small>
+        </div>
     </div>
 
     <!-- Step 3 -->
@@ -640,11 +1174,20 @@
             <div class="card-step">3</div>
             <div class="card-title">Generate</div>
         </div>
-        <button class="btn btn-primary btn-generate" id="generateBtn" disabled>⚡ Generate Stitched PDF</button>
+        <button class="btn btn-primary btn-generate" id="generateBtn" disabled><i data-lucide="zap" style="width:18px;height:18px;"></i> Generate Stitched PDF</button>
+        <p class="generate-hint" id="generateHint"><i data-lucide="info" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i> Upload a PDF first to enable generation</p>
+        <p class="generate-estimate" id="generateEstimate"></p>
     </div>
 
     <!-- Step 4 -->
     <div class="preview-section" id="previewSection">
+        <div class="success-banner" id="successBanner">
+            <div class="success-banner-icon"><i data-lucide="check-circle" style="width:22px;height:22px;color:#22c55e;"></i></div>
+            <div class="success-banner-text">
+                <strong>PDF Generated Successfully!</strong>
+                <span id="successMeta"></span>
+            </div>
+        </div>
         <div class="card">
             <div class="card-header">
                 <div class="card-step">4</div>
@@ -655,8 +1198,18 @@
             </div>
             <div class="preview-grid" id="previewGrid"></div>
             <a id="downloadLink">
-                <button class="btn-download">⬇️ Download PDF</button>
+                <button class="btn-download"><i data-lucide="download" style="width:18px;height:18px;"></i> Download PDF</button>
             </a>
+            <div class="action-row">
+                <button class="btn-print" id="printBtn" onclick="printPDF()"><i data-lucide="printer" style="width:18px;height:18px;"></i> Print</button>
+                <button class="btn-share" id="shareBtn" onclick="toggleShareMenu()"><i data-lucide="share-2" style="width:18px;height:18px;"></i> Share</button>
+            </div>
+            <div class="share-menu" id="shareMenu">
+                <a class="share-item whatsapp" id="shareWhatsapp" target="_blank"><svg viewBox="0 0 24 24" width="18" height="18" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</a>
+                <a class="share-item telegram" id="shareTelegram" target="_blank"><svg viewBox="0 0 24 24" width="18" height="18" fill="#0088cc"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0 12 12 0 0011.944 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg> Telegram</a>
+                <button class="share-item copy-link" id="shareCopy" onclick="copyShareLink()"><i data-lucide="link" style="width:16px;height:16px;"></i> Copy Link</button>
+                <button class="share-item native-share" id="nativeShare" onclick="nativeShare()"><i data-lucide="share" style="width:16px;height:16px;"></i> More...</button>
+            </div>
         </div>
     </div>
 </section>
@@ -695,6 +1248,21 @@
 
     let totalPages = 0;
     let selectedGrid = '2x2';
+    let selectedPageSize = 'a4';
+
+    // Step Progress
+    function setStep(step) {
+        document.querySelectorAll('.step-progress-item').forEach(item => {
+            const s = parseInt(item.dataset.step);
+            item.classList.remove('active', 'done');
+            if (s < step) item.classList.add('done');
+            else if (s === step) item.classList.add('active');
+        });
+        // Fill lines
+        if (step > 1) $('line1').classList.add('filled'); else $('line1').classList.remove('filled');
+        if (step > 2) $('line2').classList.add('filled'); else $('line2').classList.remove('filled');
+        if (step > 3) $('line3').classList.add('filled'); else $('line3').classList.remove('filled');
+    }
 
     // Grid selector
     document.querySelectorAll('.grid-option').forEach(opt => {
@@ -702,7 +1270,49 @@
             document.querySelectorAll('.grid-option').forEach(o => o.classList.remove('active'));
             opt.classList.add('active');
             selectedGrid = opt.dataset.grid;
+            updateEstimate();
         });
+    });
+
+    // Page size selector
+    document.querySelectorAll('.pagesize-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            document.querySelectorAll('.pagesize-option').forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+            selectedPageSize = opt.dataset.size;
+        });
+    });
+
+    // Reset all settings to defaults
+    $('resetBtn').addEventListener('click', () => {
+        // Grid
+        selectedGrid = '2x2';
+        document.querySelectorAll('.grid-option').forEach(o => o.classList.remove('active'));
+        document.querySelector('[data-grid="2x2"]').classList.add('active');
+        // Toggles
+        $('invertToggle').checked = true;
+        $('bordersToggle').checked = false;
+        $('pageNumToggle').checked = false;
+        $('compressToggle').checked = false;
+        // Sliders
+        $('brightnessSlider').value = 100;
+        $('brightnessVal').textContent = '100%';
+        $('contrastSlider').value = 100;
+        $('contrastVal').textContent = '100%';
+        // Watermark
+        $('watermarkInput').value = '';
+        // Password
+        $('pdfPasswordInput').value = '';
+        // Page size
+        selectedPageSize = 'a4';
+        document.querySelectorAll('.pagesize-option').forEach(o => o.classList.remove('active'));
+        document.querySelector('[data-size="a4"]').classList.add('active');
+        // Page range
+        $('startPage').value = 1;
+        $('skipPages').value = '';
+        if (totalPages) $('endPage').value = totalPages;
+
+        showToast('↩️ Settings reset to defaults', 'info');
     });
 
     // Brightness/Contrast sliders
@@ -713,41 +1323,118 @@
         $('contrastVal').textContent = this.value + '%';
     };
 
+    // Estimate output pages
+    const gridSlides = { '2x2': 4, '2x1': 2, '3x2': 6, '3x3': 9, '1x2': 2, '1x4': 4 };
+    function parseSkipPages(str) {
+        const skip = new Set();
+        if (!str.trim()) return skip;
+        str.split(',').forEach(part => {
+            part = part.trim();
+            if (part.includes('-')) {
+                const [a, b] = part.split('-').map(Number);
+                for (let i = a; i <= b; i++) skip.add(i);
+            } else if (!isNaN(parseInt(part))) {
+                skip.add(parseInt(part));
+            }
+        });
+        return skip;
+    }
+
+    function updateEstimate() {
+        const start = parseInt($('startPage').value) || 1;
+        const end = parseInt($('endPage').value) || totalPages || 0;
+        if (end < start || end === 0) {
+            $('generateEstimate').classList.remove('show');
+            return;
+        }
+        const skipSet = parseSkipPages($('skipPages').value);
+        let slides = 0;
+        for (let i = start; i <= end; i++) {
+            if (!skipSet.has(i)) slides++;
+        }
+        const perPage = gridSlides[selectedGrid] || 4;
+        const outputPages = Math.ceil(slides / perPage);
+        const skipText = skipSet.size > 0 ? `, ${skipSet.size} skipped` : '';
+        $('generateEstimate').textContent = `📋 ${slides} slides → ~${outputPages} output pages (${selectedGrid} grid${skipText})`;
+        $('generateEstimate').classList.add('show');
+    }
+    $('startPage').addEventListener('input', updateEstimate);
+    $('endPage').addEventListener('input', updateEstimate);
+    $('skipPages').addEventListener('input', updateEstimate);
+
     uploadArea.onclick = () => fileInput.click();
     uploadArea.ondragover = e => { e.preventDefault(); uploadArea.classList.add('dragover'); };
     uploadArea.ondragleave = () => uploadArea.classList.remove('dragover');
     uploadArea.ondrop = e => {
         e.preventDefault(); uploadArea.classList.remove('dragover');
-        if (e.dataTransfer.files[0]) { fileInput.files = e.dataTransfer.files; onFile(); }
+        if (e.dataTransfer.files.length) { fileInput.files = e.dataTransfer.files; onFile(); }
     };
     fileInput.onchange = onFile;
 
     async function onFile() {
-        const f = fileInput.files[0];
-        if (!f) return;
-        fileNameText.textContent = f.name + ' (' + (f.size/1024/1024).toFixed(1) + ' MB)';
+        const files = fileInput.files;
+        if (!files.length) return;
+
+        // Validate all files
+        let totalSize = 0;
+        for (const f of files) {
+            if (!f.name.toLowerCase().endsWith('.pdf')) {
+                showToast(`❌ ${f.name} is not a PDF file`, 'error');
+                fileInput.value = '';
+                return;
+            }
+            totalSize += f.size;
+        }
+        if (totalSize > 50 * 1024 * 1024) {
+            showToast(`❌ Total size too large (${(totalSize/1024/1024).toFixed(1)} MB). Max 50 MB combined.`, 'error');
+            fileInput.value = '';
+            return;
+        }
+
+        // Display file info
+        if (files.length === 1) {
+            fileNameText.textContent = files[0].name + ' (' + (files[0].size/1024/1024).toFixed(1) + ' MB)';
+        } else {
+            fileNameText.textContent = `${files.length} PDFs selected (${(totalSize/1024/1024).toFixed(1)} MB total)`;
+        }
         fileBadge.classList.add('show');
         uploadArea.classList.add('has-file');
+        // Drop success animation
+        uploadArea.classList.add('drop-success');
+        uploadArea.querySelector('.upload-icon').innerHTML = '<i data-lucide="check-circle" style="width:40px;height:40px;color:#22c55e;"></i>';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        setTimeout(() => uploadArea.classList.remove('drop-success'), 700);
         generateBtn.disabled = false;
+        $('generateHint').classList.add('hidden');
         $('previewSection').classList.remove('show');
         $('batchTip').classList.remove('show');
+        setStep(2);
 
-        // Get page count
-        const fd = new FormData();
-        fd.append('pdf', f);
-        try {
-            const resp = await fetch('/get-page-count', { method: 'POST', body: fd });
-            const data = await resp.json();
-            totalPages = data.total_pages;
+        // Get page count (sum of all PDFs)
+        totalPages = 0;
+        let firstPreview = null;
+        for (const f of files) {
+            const fd = new FormData();
+            fd.append('pdf', f);
+            try {
+                const resp = await fetch('/get-page-count', { method: 'POST', body: fd });
+                const data = await resp.json();
+                totalPages += data.total_pages;
+                if (!firstPreview && data.preview) firstPreview = data.preview;
+            } catch(e) {}
+        }
+        // Show quick preview
+        if (firstPreview) {
+            $('quickPreviewImg').src = 'data:image/jpeg;base64,' + firstPreview;
+            $('quickPreview').classList.add('show');
+        }
+        if (totalPages > 0) {
+            $('endPage').value = totalPages;
+            $('endPage').placeholder = totalPages;
             $('allPagesBtn').disabled = false;
-            $('allPagesBtn').textContent = `📄 All Pages (${totalPages} pages detected)`;
-            
-            // Show batch tip if > 40 pages
-            if (totalPages > 40) {
-                showBatchTip(totalPages);
-            }
-        } catch(e) {
-            $('allPagesBtn').disabled = true;
+            $('allPagesBtn').textContent = `📄 All Pages (${totalPages} pages total${files.length > 1 ? ' from ' + files.length + ' PDFs' : ''})`;
+            updateEstimate();
+            if (totalPages > 40) showBatchTip(totalPages);
         }
     }
 
@@ -758,11 +1445,14 @@
             batches.push({ start: i, end: Math.min(i + 39, total) });
         }
         tip.innerHTML = `
-            <strong>💡 Pro Tip:</strong> Your PDF has ${total} pages. Process in ${batches.length} batches for best results:
+            <strong>💡 Pro Tip:</strong> Your PDF has ${total} pages. Process in ${batches.length} batches:
             <div class="batch-list">
                 ${batches.map((b, i) => `<span class="batch-item" onclick="setBatch(${b.start}, ${b.end})">Batch ${i+1}: Pages ${b.start}-${b.end}</span>`).join('')}
             </div>
-            <span style="color:#52525b; font-size:0.7rem; margin-top:6px; display:block;">Click any batch to auto-fill the page range ↑</span>
+            <div class="batch-hint">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/></svg>
+                Click any batch above to auto-fill the page range
+            </div>
         `;
         tip.classList.add('show');
     }
@@ -832,13 +1522,41 @@
 
     function animateSteps(etaSeconds) {
         const ids = ['ls1','ls2','ls3','ls4','ls5'];
+        const labels = [
+            'Converting PDF pages',
+            'Trimming whitespace',
+            'Inverting colors',
+            'Stitching into A4 grid',
+            'Generating output PDF'
+        ];
+        const pageCount = Math.min((parseInt($('endPage').value) || 40) - (parseInt($('startPage').value) || 1) + 1, 40);
         let i = 0;
+        let processedPages = 0;
         const stepTime = (etaSeconds * 1000) / ids.length;
-        return setInterval(() => {
-            if (i > 0) { $(ids[i-1]).classList.remove('active'); $(ids[i-1]).classList.add('done'); $(ids[i-1]).textContent = '✓' + $(ids[i-1]).textContent.slice(1); }
-            if (i < ids.length) $(ids[i]).classList.add('active');
-            i++; if (i > ids.length) i = ids.length;
+
+        // Page counter update
+        const pageInterval = setInterval(() => {
+            if (processedPages < pageCount) {
+                processedPages++;
+                $(ids[0]).textContent = `● Converting page ${processedPages} of ${pageCount}`;
+            }
+        }, (stepTime * 0.8) / pageCount);
+
+        const stepInterval = setInterval(() => {
+            if (i > 0) {
+                $(ids[i-1]).classList.remove('active');
+                $(ids[i-1]).classList.add('done');
+                $(ids[i-1]).textContent = '✓ ' + labels[i-1];
+            }
+            if (i < ids.length) {
+                $(ids[i]).classList.add('active');
+                $(ids[i]).textContent = '● ' + labels[i] + (i === 0 ? ` (0/${pageCount})` : '');
+            }
+            i++;
+            if (i > ids.length) { clearInterval(stepInterval); clearInterval(pageInterval); }
         }, stepTime);
+
+        return { stepInterval, pageInterval };
     }
     function resetSteps() {
         ['ls1','ls2','ls3','ls4','ls5'].forEach((id, i) => {
@@ -855,9 +1573,52 @@
         setTimeout(() => t.classList.remove('show'), 4000);
     }
 
+    // Load cached settings
+    function loadSettings() {
+        const saved = JSON.parse(localStorage.getItem('noteforge-settings') || 'null');
+        if (!saved) return;
+        // Grid
+        if (saved.grid) {
+            selectedGrid = saved.grid;
+            document.querySelectorAll('.grid-option').forEach(o => o.classList.remove('active'));
+            const el = document.querySelector(`[data-grid="${saved.grid}"]`);
+            if (el) el.classList.add('active');
+        }
+        // Page size
+        if (saved.pageSize) {
+            selectedPageSize = saved.pageSize;
+            document.querySelectorAll('.pagesize-option').forEach(o => o.classList.remove('active'));
+            const el = document.querySelector(`[data-size="${saved.pageSize}"]`);
+            if (el) el.classList.add('active');
+        }
+        // Toggles
+        if (saved.invert !== undefined) $('invertToggle').checked = saved.invert;
+        if (saved.borders !== undefined) $('bordersToggle').checked = saved.borders;
+        if (saved.pageNumbers !== undefined) $('pageNumToggle').checked = saved.pageNumbers;
+        if (saved.compress !== undefined) $('compressToggle').checked = saved.compress;
+        // Sliders
+        if (saved.brightness) { $('brightnessSlider').value = saved.brightness; $('brightnessVal').textContent = saved.brightness + '%'; }
+        if (saved.contrast) { $('contrastSlider').value = saved.contrast; $('contrastVal').textContent = saved.contrast + '%'; }
+    }
+    loadSettings();
+
+    // Save settings before generate
+    function saveSettings() {
+        localStorage.setItem('noteforge-settings', JSON.stringify({
+            grid: selectedGrid,
+            pageSize: selectedPageSize,
+            invert: $('invertToggle').checked,
+            borders: $('bordersToggle').checked,
+            pageNumbers: $('pageNumToggle').checked,
+            compress: $('compressToggle').checked,
+            brightness: $('brightnessSlider').value,
+            contrast: $('contrastSlider').value,
+        }));
+    }
+
     generateBtn.onclick = async () => {
-        const file = fileInput.files[0];
-        if (!file) return;
+        const files = fileInput.files;
+        if (!files.length) return;
 
         // Validate page range
         const start = parseInt($('startPage').value) || 1;
@@ -874,7 +1635,10 @@
         }
 
         const fd = new FormData();
-        fd.append('pdf', file);
+        // Append all PDFs
+        for (const f of files) {
+            fd.append('pdf', f);
+        }
         fd.append('start_page', start);
         fd.append('end_page', end);
         fd.append('invert', $('invertToggle').checked ? 'on' : 'off');
@@ -884,6 +1648,10 @@
         fd.append('brightness', $('brightnessSlider').value / 100);
         fd.append('contrast', $('contrastSlider').value / 100);
         fd.append('watermark', $('watermarkInput').value);
+        fd.append('page_size', selectedPageSize);
+        fd.append('pdf_password', $('pdfPasswordInput').value);
+        fd.append('skip_pages', $('skipPages').value);
+        fd.append('compress', $('compressToggle').checked ? 'on' : 'off');
 
         const eta = calculateETA();
         $('loadingOverlay').classList.add('active');
@@ -891,6 +1659,8 @@
         const anim = animateSteps(eta);
         startTimer(eta);
         generateBtn.disabled = true;
+        setStep(3);
+        saveSettings();
 
         try {
             const resp = await fetch('/generate', { method: 'POST', body: fd });
@@ -914,16 +1684,23 @@
             $('slideCount').textContent = data.slides;
 
             const dl = $('downloadLink');
-            dl.href = '/download/' + data.output_id;
-            dl.download = file.name.replace('.pdf','') + '_stitched.pdf';
+            const firstName = files[0].name.replace('.pdf','').replace('.PDF','');
+            const outName = files.length === 1 ? firstName + '_stitched.pdf' : firstName + '_and_more_stitched.pdf';
+            dl.href = '/download/' + data.output_id + '?name=' + encodeURIComponent(outName);
+            dl.download = outName;
 
             $('previewSection').classList.add('show');
+            $('successMeta').textContent = `${data.slides} slides → ${data.pages} pages • Generated in ${elapsed}s`;
             $('previewSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
             showToast('✅ PDF generated in ' + elapsed + 's!', 'success');
+            setStep(4);
+            launchConfetti();
+            playSuccessSound();
+            updateShareLinks();
 
             // Save to history
             saveToHistory({
-                name: file.name,
+                name: files.length === 1 ? files[0].name : `${files.length} PDFs merged`,
                 pages: data.slides,
                 output_pages: data.pages,
                 grid: selectedGrid,
@@ -933,7 +1710,8 @@
         } catch(e) {
             showToast('❌ ' + e.message, 'error');
         } finally {
-            clearInterval(anim);
+            clearInterval(anim.stepInterval);
+            clearInterval(anim.pageInterval);
             stopTimer();
             $('loadingOverlay').classList.remove('active');
             generateBtn.disabled = false;
@@ -954,9 +1732,111 @@
 
 
 
+    // Success notification sound (generated via Web Audio API - no external file needed)
+    function playSuccessSound() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = [523.25, 659.25, 783.99]; // C5, E5, G5 chord
+            notes.forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(ctx.currentTime + i * 0.1);
+                osc.stop(ctx.currentTime + 0.7);
+            });
+        } catch(e) {}
+    }
+
+    // Print PDF directly
+    function printPDF() {
+        const link = $('downloadLink').href;
+        if (!link) return;
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = link;
+        document.body.appendChild(iframe);
+        iframe.onload = () => {
+            iframe.contentWindow.print();
+            setTimeout(() => iframe.remove(), 60000);
+        };
+    }
+
+    // Password visibility toggle
+    function togglePasswordVisibility() {
+        const input = $('pdfPasswordInput');
+        const icon = $('passwordEyeIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.setAttribute('data-lucide', 'eye-off');
+        } else {
+            input.type = 'password';
+            icon.setAttribute('data-lucide', 'eye');
+        }
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    // Share functionality
+    function toggleShareMenu() {
+        $('shareMenu').classList.toggle('show');
+    }
+
+    function updateShareLinks() {
+        const link = $('downloadLink').href;
+        const text = 'Check out my stitched PDF notes made with NoteForge! ⚡';
+        $('shareWhatsapp').href = `https://wa.me/?text=${encodeURIComponent(text + '\n' + link)}`;
+        $('shareTelegram').href = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
+    }
+
+    function copyShareLink() {
+        const link = $('downloadLink').href;
+        navigator.clipboard.writeText(link).then(() => {
+            showToast('📋 Link copied to clipboard!', 'success');
+        }).catch(() => {
+            showToast('❌ Could not copy link', 'error');
+        });
+    }
+
+    function nativeShare() {
+        const link = $('downloadLink').href;
+        if (navigator.share) {
+            navigator.share({
+                title: 'NoteForge - Stitched PDF',
+                text: 'Check out my stitched PDF notes made with NoteForge! ⚡',
+                url: link
+            }).catch(() => {});
+        } else {
+            copyShareLink();
+        }
+    }
+
+    // Confetti celebration
+    function launchConfetti() {
+        const container = document.createElement('div');
+        container.className = 'confetti-container';
+        document.body.appendChild(container);
+        const colors = ['#667eea', '#a78bfa', '#f093fb', '#22c55e', '#fbbf24', '#ef4444'];
+        for (let i = 0; i < 80; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            piece.style.left = Math.random() * 100 + '%';
+            piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+            piece.style.animationDelay = (Math.random() * 0.5) + 's';
+            piece.style.width = (4 + Math.random() * 6) + 'px';
+            piece.style.height = (8 + Math.random() * 12) + 'px';
+            piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+            container.appendChild(piece);
+        }
+        setTimeout(() => container.remove(), 4000);
+    }
+
     // --- Keyboard Shortcuts ---
-    document.addEventListener('keydown', (e) => {
-        // Ctrl+G or Cmd+G = Generate
+    document.addEventListener('keydown', (e) => {        // Ctrl+G or Cmd+G = Generate
         if ((e.ctrlKey || e.metaKey) && e.key === 'g') {
             e.preventDefault();
             if (!generateBtn.disabled) generateBtn.click();
@@ -971,5 +1851,6 @@
             $('loadingOverlay').classList.remove('active');
         }
     });
+    lucide.createIcons && lucide.createIcons();
 </script>
 {% endblock %}
